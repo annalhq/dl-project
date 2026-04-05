@@ -1,8 +1,6 @@
-/* ── Google Fonts ─────────────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: black --default;
+  themes: corporate --default;
 }
 
 /* ── Base ─────────────────────────────────────────────────── */
@@ -10,50 +8,77 @@
   box-sizing: border-box;
 }
 
-html, body {
-  font-family: 'Inter', system-ui, sans-serif;
+html,
+body {
+  font-family: var(--font-space-grotesk), "Segoe UI", sans-serif;
   min-height: 100vh;
   margin: 0;
-  background-color: var(--fallback-b1,oklch(var(--b1)));
-  color: var(--fallback-bc,oklch(var(--bc)));
+  color-scheme: light;
+  background-color: oklch(98% 0.01 240);
+  color: oklch(28% 0.03 252);
 }
 
 /* ── Custom Selections ───────────────────────────────────── */
 ::selection {
-  background-color: oklch(100% 0 0);
-  color: oklch(0% 0 0);
+  background-color: oklch(86% 0.1 226);
+  color: oklch(25% 0.02 252);
 }
 
 /* ── Scrollbar (Minimal) ─────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: oklch(95% 0.01 250);
 }
 ::-webkit-scrollbar-thumb {
-  background: oklch(20% 0 0);
+  background: oklch(78% 0.03 246);
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(40% 0 0);
+  background: oklch(67% 0.05 246);
+}
+
+/* ── Surface language ────────────────────────────────────── */
+.app-shell-bg {
+  background-image:
+    radial-gradient(circle at 10% -5%, oklch(92% 0.06 220) 0%, transparent 35%),
+    radial-gradient(circle at 95% 0%, oklch(93% 0.05 157) 0%, transparent 30%),
+    linear-gradient(
+      180deg,
+      oklch(97% 0.01 245) 0%,
+      oklch(99% 0 0) 55%,
+      oklch(97% 0.01 245) 100%
+    );
+}
+
+.surface-card {
+  border: 1px solid oklch(86% 0.02 250);
+  background: linear-gradient(
+    180deg,
+    oklch(100% 0 0 / 0.96) 0%,
+    oklch(99% 0.01 248 / 0.98) 100%
+  );
+  box-shadow: 0 14px 40px -28px oklch(52% 0.06 248 / 0.45);
+  border-radius: 1.1rem;
 }
 
 /* ── Upload dropzone ─────────────────────────────────────── */
 .dropzone {
-  border: 1px dashed oklch(25% 0 0);
-  border-radius: 0.5rem;
-  background: transparent;
+  border: 2px dashed oklch(74% 0.04 246);
+  border-radius: 1rem;
+  background: oklch(98% 0.01 245 / 0.75);
   transition: all 0.2s ease;
   cursor: pointer;
 }
 .dropzone:hover {
-  border-color: oklch(50% 0 0);
+  border-color: oklch(64% 0.09 239);
+  background: oklch(97% 0.02 240);
 }
 .dropzone.drag-over {
-  border-color: oklch(100% 0 0);
-  background: oklch(10% 0 0);
-  box-shadow: 0 0 0 2px oklch(15% 0 0);
+  border-color: oklch(62% 0.11 240);
+  background: oklch(95% 0.03 240);
+  box-shadow: 0 0 0 4px oklch(76% 0.08 240 / 0.35);
 }
 
 /* ── Animations ──────────────────────────────────────────── */
@@ -73,50 +98,73 @@ html, body {
 }
 
 /* staggered children */
-.stagger > *:nth-child(1) { animation-delay: 0.05s; }
-.stagger > *:nth-child(2) { animation-delay: 0.10s; }
-.stagger > *:nth-child(3) { animation-delay: 0.15s; }
-.stagger > *:nth-child(4) { animation-delay: 0.20s; }
-.stagger > *:nth-child(5) { animation-delay: 0.25s; }
-.stagger > *:nth-child(6) { animation-delay: 0.30s; }
-.stagger > *:nth-child(7) { animation-delay: 0.35s; }
-.stagger > *:nth-child(8) { animation-delay: 0.40s; }
-.stagger > *:nth-child(9) { animation-delay: 0.45s; }
+.stagger > *:nth-child(1) {
+  animation-delay: 0.05s;
+}
+.stagger > *:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.stagger > *:nth-child(3) {
+  animation-delay: 0.15s;
+}
+.stagger > *:nth-child(4) {
+  animation-delay: 0.2s;
+}
+.stagger > *:nth-child(5) {
+  animation-delay: 0.25s;
+}
+.stagger > *:nth-child(6) {
+  animation-delay: 0.3s;
+}
+.stagger > *:nth-child(7) {
+  animation-delay: 0.35s;
+}
+.stagger > *:nth-child(8) {
+  animation-delay: 0.4s;
+}
+.stagger > *:nth-child(9) {
+  animation-delay: 0.45s;
+}
 
 /* ── Genre badge minimal ─────────────────────────────────── */
 .genre-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 0.25rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.55rem;
   font-size: 0.7rem;
-  font-weight: 500;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   transition: all 0.15s ease;
-  background-color: oklch(12% 0 0);
-  color: oklch(90% 0 0);
-  border: 1px solid oklch(20% 0 0);
+  background-color: oklch(96% 0.02 240);
+  color: oklch(34% 0.03 250);
+  border: 1px solid oklch(85% 0.03 248);
 }
 
 /* ── Progress bar minimal ────────────────────────────────── */
 .progress {
   transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  border-radius: 0;
+  border-radius: 9999px;
 }
 
 /* ── Card sleek minimal ──────────────────────────────────── */
 .card-border {
-  border: 1px solid oklch(15% 0 0);
-  border-radius: 0.5rem;
-  background-color: oklch(5% 0 0);
+  border: 1px solid oklch(86% 0.02 250);
+  border-radius: 1rem;
+  background-color: oklch(100% 0 0 / 0.96);
 }
 .card-hover-lift {
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 .card-hover-lift:hover {
-  border-color: oklch(30% 0 0);
+  border-color: oklch(73% 0.07 240);
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px -24px oklch(50% 0.07 245 / 0.45);
 }
 
 /* ── Stat card responsive ────────────────────────────────── */
@@ -131,23 +179,29 @@ html, body {
   transition: background-color 0.15s ease;
 }
 .file-list-item:hover {
-  background-color: oklch(10% 0 0);
+  background-color: oklch(96% 0.01 248);
 }
 
 /* ── Utility overrides ───────────────────────────────────── */
-.table th, .table td {
-  border-color: oklch(15% 0 0);
+.table th,
+.table td {
+  border-color: oklch(88% 0.02 248);
 }
 .btn {
-  border-radius: 0.25rem;
-  font-weight: 500;
+  border-radius: 0.75rem;
+  font-weight: 600;
   text-transform: none;
 }
 .btn-primary {
-  background-color: oklch(100% 0 0);
-  color: oklch(0% 0 0);
+  background-color: oklch(59% 0.12 241);
+  border-color: oklch(56% 0.11 241);
+  color: oklch(99% 0 0);
 }
 .btn-primary:hover {
-  background-color: oklch(90% 0 0);
-  border-color: transparent;
+  background-color: oklch(52% 0.11 241);
+  border-color: oklch(52% 0.11 241);
+}
+
+.btn-outline {
+  border-color: oklch(80% 0.03 248);
 }

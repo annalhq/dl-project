@@ -1,8 +1,13 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { AppView, DashboardViewMode, SongResult, FileProgress } from "./lib/types";
-import { API_PREDICT_STREAM, API_PREDICT, GENRE_EMOJI, GENRES, pct } from "./lib/constants";
+import {
+  AppView,
+  DashboardViewMode,
+  SongResult,
+  FileProgress,
+} from "./lib/types";
+import { API_PREDICT_STREAM, API_PREDICT, GENRES } from "./lib/constants";
 
 import HeroSection from "./components/HeroSection";
 import UploadZone from "./components/UploadZone";
@@ -21,7 +26,7 @@ function exportCSV(results: SongResult[]) {
     r.genre ?? "error",
     r.confidence != null ? (r.confidence * 100).toFixed(1) : "",
     ...GENRES.map((g) =>
-      r.probabilities?.[g] != null ? (r.probabilities[g] * 100).toFixed(2) : ""
+      r.probabilities?.[g] != null ? (r.probabilities[g] * 100).toFixed(2) : "",
     ),
   ]);
 
@@ -40,14 +45,16 @@ export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
   const [view, setView] = useState<AppView>("upload");
   const [results, setResults] = useState<SongResult[]>([]);
-  const [fileProgresses, setFileProgresses] = useState<Map<string, FileProgress>>(new Map());
+  const [fileProgresses, setFileProgresses] = useState<
+    Map<string, FileProgress>
+  >(new Map());
   const [dashViewMode, setDashViewMode] = useState<DashboardViewMode>("grid");
   const [activeGenre, setActiveGenre] = useState<string | null>(null);
 
   // ── File Management ────────────────────────────────────────────────────
   const addFiles = useCallback((incoming: FileList | File[]) => {
     const mp3s = Array.from(incoming).filter((f) =>
-      f.name.toLowerCase().endsWith(".mp3")
+      f.name.toLowerCase().endsWith(".mp3"),
     );
     setFiles((prev) => {
       const names = new Set(prev.map((f) => f.name));
@@ -168,7 +175,7 @@ export default function Home() {
             confidence: null,
             probabilities: null,
             error: err instanceof Error ? err.message : "Unknown error",
-          }))
+          })),
         );
       }
       setView("dashboard");
@@ -191,10 +198,13 @@ export default function Home() {
     return acc;
   }, {});
 
-  const sortedGenres = Object.entries(grouped)
-    .sort((a, b) => b[1].length - a[1].length);
+  const sortedGenres = Object.entries(grouped).sort(
+    (a, b) => b[1].length - a[1].length,
+  );
 
-  const genreCounts = Object.fromEntries(sortedGenres.map(([g, songs]) => [g, songs.length]));
+  const genreCounts = Object.fromEntries(
+    sortedGenres.map(([g, songs]) => [g, songs.length]),
+  );
   const detectedGenres = sortedGenres.map(([g]) => g);
   const topGenre = sortedGenres.length > 0 ? sortedGenres[0][0] : null;
   const errorResults = results.filter((r) => r.error);
@@ -205,18 +215,21 @@ export default function Home() {
 
   // ── Render ─────────────────────────────────────────────────────────────
   return (
-    <div className="max-w-6xl mx-auto px-4 pb-16">
+    <div className="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
       {/* ── Upload View ── */}
       {view === "upload" && (
         <>
           <HeroSection />
 
-          <div className="card card-border bg-base-100 shadow-sm p-6 sm:p-8 mb-6">
+          <div className="card card-border surface-card mb-6 p-6 sm:p-8">
             <UploadZone onFilesAdded={addFiles} />
 
             {files.length > 0 && (
               <>
-                <div className="divider text-[10px] uppercase tracking-widest font-mono text-base-content/40 mt-8 mb-6">
+                <div
+                  className="divider mb-6 mt-8 text-[10px] uppercase tracking-[0.2em] text-base-content/45"
+                  style={{ fontFamily: "var(--font-jetbrains)" }}
+                >
                   Ready Sequence
                 </div>
                 <FileQueue
@@ -231,9 +244,10 @@ export default function Home() {
                     id="classify-btn"
                     onClick={handleClassify}
                     disabled={!files.length}
-                    className="btn btn-neutral btn-lg px-12 tracking-widest font-mono text-xs uppercase"
+                    className="btn btn-primary btn-lg px-12 text-xs font-semibold uppercase tracking-[0.2em]"
+                    style={{ fontFamily: "var(--font-jetbrains)" }}
                   >
-                    Execute Inference ({files.length})
+                    Run Analysis ({files.length})
                   </button>
                 </div>
               </>
@@ -264,48 +278,67 @@ export default function Home() {
           />
 
           {/* Action bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 animate-fade-up">
-            <div className="flex items-center gap-3">
-              <h2 className="text-xl font-semibold tracking-tight">Analysis Report</h2>
-              <span className="px-2 py-0.5 rounded-full bg-base-content/10 font-mono text-[10px]">{results.length} ENTRIES</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => exportCSV(results)}
-                className="btn btn-ghost btn-sm font-mono text-[10px] tracking-widest uppercase"
-              >
-                Output CSV
-              </button>
-              <button
-                id="classify-again-btn"
-                onClick={reset}
-                className="btn btn-outline btn-sm font-mono text-[10px] tracking-widest uppercase border-base-content/20"
-              >
-                New Session
-              </button>
+          <div className="animate-fade-up surface-card rounded-2xl border border-base-300/70 p-4 sm:p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <h2 className="text-xl font-semibold tracking-tight">
+                  Analysis Report
+                </h2>
+                <span
+                  className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] text-primary"
+                  style={{ fontFamily: "var(--font-jetbrains)" }}
+                >
+                  {results.length} ENTRIES
+                </span>
+              </div>
+
+              <div className="join">
+                <button
+                  onClick={() => exportCSV(results)}
+                  className="join-item btn btn-outline btn-sm text-[10px] font-semibold uppercase tracking-[0.18em]"
+                  style={{ fontFamily: "var(--font-jetbrains)" }}
+                >
+                  Export CSV
+                </button>
+                <button
+                  id="classify-again-btn"
+                  onClick={reset}
+                  className="join-item btn btn-primary btn-sm text-[10px] font-semibold uppercase tracking-[0.18em]"
+                  style={{ fontFamily: "var(--font-jetbrains)" }}
+                >
+                  New Session
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Filter + View toggle */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mt-2">
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-4">
             <GenreFilter
               genres={detectedGenres}
               genreCounts={genreCounts}
               activeGenre={activeGenre}
               onSelect={setActiveGenre}
             />
-            <div className="flex bg-base-content/5 p-1 rounded font-mono text-[10px] uppercase tracking-widest">
+            <div
+              role="tablist"
+              className="tabs tabs-box border border-base-300/70 bg-base-100 p-1"
+            >
               <button
-                className={`px-3 py-1.5 rounded transition-colors ${dashViewMode === "grid" ? "bg-base-100 shadow-sm text-base-content" : "text-base-content/40 hover:text-base-content/80"}`}
+                role="tab"
+                className={`tab px-4 text-[11px] uppercase tracking-[0.17em] ${dashViewMode === "grid" ? "tab-active text-primary" : "text-base-content/65"}`}
+                style={{ fontFamily: "var(--font-jetbrains)" }}
                 onClick={() => setDashViewMode("grid")}
               >
-                Deck
+                Card Deck
               </button>
               <button
-                className={`px-3 py-1.5 rounded transition-colors ${dashViewMode === "table" ? "bg-base-100 shadow-sm text-base-content" : "text-base-content/40 hover:text-base-content/80"}`}
+                role="tab"
+                className={`tab px-4 text-[11px] uppercase tracking-[0.17em] ${dashViewMode === "table" ? "tab-active text-primary" : "text-base-content/65"}`}
+                style={{ fontFamily: "var(--font-jetbrains)" }}
                 onClick={() => setDashViewMode("table")}
               >
-                Log
+                Table Log
               </button>
             </div>
           </div>
@@ -321,20 +354,25 @@ export default function Home() {
 
           {/* Table View */}
           {dashViewMode === "table" && (
-            <div className="card card-border bg-base-100 shadow-sm">
+            <div className="card card-border surface-card">
               <SongTable results={filteredResults} />
             </div>
           )}
 
           {/* Errors */}
           {errorResults.length > 0 && (
-            <div className="space-y-3 animate-fade-up mt-8 border-t border-error/20 pt-6">
-              <h3 className="text-sm font-semibold text-error tracking-tight">
+            <div className="mt-8 space-y-3 border-t border-error/30 pt-6 animate-fade-up">
+              <h3 className="text-sm font-semibold tracking-tight text-error">
                 PROCESSING ERRORS ({errorResults.length})
               </h3>
               {errorResults.map((r) => (
-                <div key={r.filename} className="p-3 bg-error/5 border border-error/10 rounded font-mono text-[10px] text-error">
-                  <span className="font-bold opacity-80 mr-2">[{r.filename}]</span> 
+                <div
+                  key={r.filename}
+                  className="alert rounded-xl border border-error/25 bg-error/10 text-error"
+                >
+                  <span className="font-bold opacity-80 mr-2">
+                    [{r.filename}]
+                  </span>
                   {r.error}
                 </div>
               ))}

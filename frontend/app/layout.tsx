@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 
-const inter = Inter({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-space-grotesk",
+  weight: ["400", "500", "600", "700"],
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains",
+  weight: ["500", "600"],
 });
 
 export const metadata: Metadata = {
@@ -21,18 +28,24 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="black" className={`${inter.variable} h-full`}>
-      <body className="min-h-full antialiased bg-base-200">
+    <html
+      lang="en"
+      data-theme="corporate"
+      className={`${spaceGrotesk.variable} ${jetBrainsMono.variable} h-full`}
+    >
+      <body className="min-h-full antialiased app-shell-bg text-base-content">
         <Navbar />
         <main className="min-h-[calc(100vh-4rem)]">{children}</main>
-        <footer className="footer footer-center bg-base-100 text-base-content/50 p-6 text-xs border-t border-base-300">
-          <div>
+        <footer className="footer footer-center border-t border-base-300/60 bg-base-100/75 p-6 text-xs text-base-content/70 backdrop-blur-sm">
+          <div className="gap-1">
             <p>
-              Built with{" "}
-              <span className="font-semibold text-primary">CNN</span> ·{" "}
-              <span className="font-semibold text-secondary">FastAPI</span> ·{" "}
+              Built with <span className="font-semibold text-primary">CNN</span>{" "}
+              · <span className="font-semibold text-secondary">FastAPI</span> ·{" "}
               <span className="font-semibold text-accent">Next.js</span> ·{" "}
               <span className="font-semibold text-info">DaisyUI</span>
+            </p>
+            <p className="font-medium">
+              Light-first interface tuned for clarity and fast review loops.
             </p>
           </div>
         </footer>
