@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-multipart
+numpy
+pydub
+librosa
+tensorflow>=2.8
+keras>=2.8
+matplotlib
+pillow
