@@ -7,29 +7,29 @@ export const GENRES = [
 export type GenreName = (typeof GENRES)[number];
 
 export const GENRE_EMOJI: Record<string, string> = {
-  blues: "🎷", classical: "🎻", country: "🤠", disco: "🕺",
-  hiphop: "🎤", metal: "🤘", pop: "🎵", reggae: "🌴", rock: "🎸",
+  blues: "", classical: "", country: "", disco: "",
+  hiphop: "", metal: "", pop: "", reggae: "", rock: "",
 };
 
 export const GENRE_DESC: Record<string, string> = {
-  blues: "Soulful & expressive", classical: "Orchestral & timeless",
-  country: "Roots & storytelling", disco: "Groovy & danceable",
-  hiphop: "Rhythmic & lyrical", metal: "Heavy & powerful",
-  pop: "Catchy & melodic", reggae: "Laid-back & rhythmic",
-  rock: "Energetic & electric",
+  blues: "Soulful", classical: "Orchestral",
+  country: "Roots", disco: "Groovy",
+  hiphop: "Rhythmic", metal: "Heavy",
+  pop: "Melodic", reggae: "Laid-back",
+  rock: "Electric",
 };
 
-// Pastel-friendly badge colors for each genre (used as inline styles)
+// Monochrome badge colors
 export const GENRE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  blues:     { bg: "#dbeafe", text: "#1e40af", border: "#93c5fd" },
-  classical: { bg: "#fef3c7", text: "#92400e", border: "#fcd34d" },
-  country:   { bg: "#fef9c3", text: "#854d0e", border: "#fde68a" },
-  disco:     { bg: "#fce7f3", text: "#9d174d", border: "#f9a8d4" },
-  hiphop:    { bg: "#f3e8ff", text: "#6b21a8", border: "#d8b4fe" },
-  metal:     { bg: "#f1f5f9", text: "#334155", border: "#cbd5e1" },
-  pop:       { bg: "#ffe4e6", text: "#9f1239", border: "#fca5a5" },
-  reggae:    { bg: "#dcfce7", text: "#166534", border: "#86efac" },
-  rock:      { bg: "#ffedd5", text: "#9a3412", border: "#fdba74" },
+  blues:     { bg: "transparent", text: "#e5e5e5", border: "#262626" },
+  classical: { bg: "transparent", text: "#e5e5e5", border: "#262626" },
+  country:   { bg: "transparent", text: "#e5e5e5", border: "#262626" },
+  disco:     { bg: "transparent", text: "#e5e5e5", border: "#262626" },
+  hiphop:    { bg: "transparent", text: "#e5e5e5", border: "#262626" },
+  metal:     { bg: "transparent", text: "#e5e5e5", border: "#262626" },
+  pop:       { bg: "transparent", text: "#e5e5e5", border: "#262626" },
+  reggae:    { bg: "transparent", text: "#e5e5e5", border: "#262626" },
+  rock:      { bg: "transparent", text: "#e5e5e5", border: "#262626" },
 };
 
 // ── Processing step labels ─────────────────────────────────────────────────

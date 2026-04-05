@@ -44,7 +44,7 @@ export default function UploadZone({ onFilesAdded }: UploadZoneProps) {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* Dropzone */}
       <div
         id="dropzone"
@@ -63,27 +63,21 @@ export default function UploadZone({ onFilesAdded }: UploadZoneProps) {
         onDragLeave={() => setDragOver(false)}
         onDrop={onDrop}
       >
-        <div
-          className={`text-5xl animate-float ${
-            dragOver ? "scale-110" : ""
-          } transition-transform duration-200`}
-        >
-          🎵
+        <div className={`transition-transform duration-200 text-base-content/50 ${dragOver ? "scale-110" : ""}`}>
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+          </svg>
         </div>
         <div className="text-center">
-          <p className="text-base-content font-semibold text-lg">
-            Drop MP3 files here
+          <p className="text-base-content font-medium text-lg tracking-tight">
+            Select files to analyze
           </p>
-          <p className="text-base-content/50 text-sm mt-1">
-            or{" "}
-            <span className="text-primary font-medium cursor-pointer underline underline-offset-2">
-              click to browse
-            </span>
+          <p className="text-base-content/50 text-sm mt-1 font-light">
+            or drag and drop them here
           </p>
         </div>
-        <div className="flex gap-2 mt-1">
-          <span className="badge badge-ghost badge-sm">.mp3</span>
-          <span className="badge badge-ghost badge-sm">audio/mpeg</span>
+        <div className="flex gap-2 mt-2">
+          <span className="px-2 py-0.5 text-[10px] font-mono tracking-widest text-base-content/40 border border-base-content/10 rounded uppercase">MP3</span>
         </div>
         <input
           ref={inputRef}
@@ -101,7 +95,7 @@ export default function UploadZone({ onFilesAdded }: UploadZoneProps) {
         <label className="form-control w-full max-w-sm">
           <input
             type="file"
-            className="file-input file-input-bordered file-input-primary file-input-sm w-full"
+            className="file-input file-input-bordered file-input-sm w-full font-mono text-xs"
             accept=".mp3,audio/mpeg"
             multiple
             onChange={onFileChange}
@@ -111,7 +105,7 @@ export default function UploadZone({ onFilesAdded }: UploadZoneProps) {
 
       {/* Rejected files alert */}
       {rejected.length > 0 && (
-        <div className="alert alert-warning alert-sm animate-fade-up">
+        <div className="alert alert-warning alert-sm animate-fade-up rounded border-l-4 border-warning bg-warning/10 text-warning-content">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="h-5 w-5 shrink-0"
@@ -126,8 +120,8 @@ export default function UploadZone({ onFilesAdded }: UploadZoneProps) {
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
             />
           </svg>
-          <span>
-            <strong>{rejected.length}</strong> file{rejected.length !== 1 ? "s" : ""} rejected — only MP3 files are supported.
+          <span className="font-medium text-xs">
+            <strong>{rejected.length}</strong> invalid format{rejected.length !== 1 ? "s" : ""} — MP3 exclusively.
           </span>
         </div>
       )}

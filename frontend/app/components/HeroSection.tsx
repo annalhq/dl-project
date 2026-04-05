@@ -1,35 +1,24 @@
 "use client";
 
-import { GENRES, GENRE_EMOJI } from "../lib/constants";
+import { GENRES } from "../lib/constants";
 
 export default function HeroSection() {
   return (
-    <div className="hero py-8 lg:py-10">
-      <div className="hero-content text-center">
-        <div className="max-w-2xl">
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-3">
-            <span className="text-primary">Sound</span>
-            <span className="text-secondary">Sort</span>
-          </h1>
+    <div className="py-16 lg:py-24 animate-fade-up">
+      <div className="text-center max-w-3xl mx-auto px-4">
+        <h1 className="text-4xl sm:text-6xl font-bold tracking-tighter mb-6 text-base-content">
+          Sound<span className="text-neutral-500">Sort</span>
+        </h1>
 
-          <p className="text-base-content/60 text-base sm:text-lg leading-relaxed mb-1.5">
-            Upload your MP3 files and our AI instantly classifies each song into its genre.
-          </p>
-          <p className="text-base-content/40 text-sm mb-5">
-            Perfect for auditions, playlist curation & music organization.
-          </p>
+        <p className="text-base-content/70 text-lg sm:text-xl font-light mb-8 max-w-2xl mx-auto">
+          High-performance classification. Uncover the structure of your audio intelligence via CNN model inference.
+        </p>
 
-          {/* Genre pills */}
-          <div className="flex flex-wrap justify-center gap-1.5">
-            {GENRES.map((g) => (
-              <span
-                key={g}
-                className="badge badge-outline badge-sm capitalize font-medium"
-              >
-                {GENRE_EMOJI[g]} {g}
-              </span>
-            ))}
-          </div>
+        {/* Info pills */}
+        <div className="flex flex-wrap justify-center gap-2 mb-10 text-xs sm:text-sm font-medium text-base-content/50">
+          <span className="px-3 py-1 border border-base-content/10 rounded-full">Spectrogram Analysis</span>
+          <span className="px-3 py-1 border border-base-content/10 rounded-full">Batch Processing</span>
+          <span className="px-3 py-1 border border-base-content/10 rounded-full">10+ Formats Supported</span>
         </div>
       </div>
     </div>

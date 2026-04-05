@@ -216,8 +216,8 @@ export default function Home() {
 
             {files.length > 0 && (
               <>
-                <div className="divider text-xs text-base-content/40">
-                  Ready to classify
+                <div className="divider text-[10px] uppercase tracking-widest font-mono text-base-content/40 mt-8 mb-6">
+                  Ready Sequence
                 </div>
                 <FileQueue
                   files={files}
@@ -226,17 +226,14 @@ export default function Home() {
                 />
 
                 {/* Classify button */}
-                <div className="mt-6 flex justify-center">
+                <div className="mt-8 flex justify-center">
                   <button
                     id="classify-btn"
                     onClick={handleClassify}
                     disabled={!files.length}
-                    className="btn btn-primary btn-lg gap-2 shadow-md"
+                    className="btn btn-neutral btn-lg px-12 tracking-widest font-mono text-xs uppercase"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-                      <path d="M15.98 1.804a1 1 0 0 0-1.96 0l-.24 1.192a1 1 0 0 1-.784.784l-1.192.238a1 1 0 0 0 0 1.962l1.192.238a1 1 0 0 1 .784.785l.238 1.192a1 1 0 0 0 1.962 0l.238-1.192a1 1 0 0 1 .785-.785l1.192-.238a1 1 0 0 0 0-1.962l-1.192-.238a1 1 0 0 1-.785-.784l-.238-1.192ZM6.949 5.684a1 1 0 0 0-1.898 0l-.683 2.051a1 1 0 0 1-.633.633l-2.051.683a1 1 0 0 0 0 1.898l2.051.684a1 1 0 0 1 .633.632l.683 2.051a1 1 0 0 0 1.898 0l.683-2.051a1 1 0 0 1 .633-.633l2.051-.683a1 1 0 0 0 0-1.898l-2.051-.683a1 1 0 0 1-.633-.633L6.95 5.684Z" />
-                    </svg>
-                    Classify {files.length} Song{files.length !== 1 ? "s" : ""}
+                    Execute Inference ({files.length})
                   </button>
                 </div>
               </>
@@ -268,60 +265,47 @@ export default function Home() {
 
           {/* Action bar */}
           <div className="flex flex-wrap items-center justify-between gap-3 animate-fade-up">
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold">Results</h2>
-              <span className="badge badge-primary badge-sm">{results.length}</span>
+            <div className="flex items-center gap-3">
+              <h2 className="text-xl font-semibold tracking-tight">Analysis Report</h2>
+              <span className="px-2 py-0.5 rounded-full bg-base-content/10 font-mono text-[10px]">{results.length} ENTRIES</span>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => exportCSV(results)}
-                className="btn btn-ghost btn-sm gap-1"
+                className="btn btn-ghost btn-sm font-mono text-[10px] tracking-widest uppercase"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                  <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z" />
-                  <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
-                </svg>
-                Export CSV
+                Output CSV
               </button>
               <button
                 id="classify-again-btn"
                 onClick={reset}
-                className="btn btn-outline btn-primary btn-sm gap-1"
+                className="btn btn-outline btn-sm font-mono text-[10px] tracking-widest uppercase border-base-content/20"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                  <path fillRule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H4.28a.75.75 0 0 0-.75.75v3.955a.75.75 0 0 0 1.5 0v-2.134l.235.234A7 7 0 0 0 17 11.424a.75.75 0 0 0-1.688 0ZM4.688 8.576a5.5 5.5 0 0 1 9.201-2.466l.312.311H11.77a.75.75 0 0 0 0 1.5h3.952a.75.75 0 0 0 .75-.75V3.216a.75.75 0 0 0-1.5 0v2.134l-.235-.234A7 7 0 0 0 3 8.576a.75.75 0 0 0 1.688 0Z" clipRule="evenodd" />
-                </svg>
-                New Upload
+                New Session
               </button>
             </div>
           </div>
 
           {/* Filter + View toggle */}
-          <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 mt-2">
             <GenreFilter
               genres={detectedGenres}
               genreCounts={genreCounts}
               activeGenre={activeGenre}
               onSelect={setActiveGenre}
             />
-            <div className="tabs tabs-box tabs-sm">
+            <div className="flex bg-base-content/5 p-1 rounded font-mono text-[10px] uppercase tracking-widest">
               <button
-                className={`tab ${dashViewMode === "grid" ? "tab-active" : ""}`}
+                className={`px-3 py-1.5 rounded transition-colors ${dashViewMode === "grid" ? "bg-base-100 shadow-sm text-base-content" : "text-base-content/40 hover:text-base-content/80"}`}
                 onClick={() => setDashViewMode("grid")}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 mr-1">
-                  <path fillRule="evenodd" d="M4.25 2A2.25 2.25 0 0 0 2 4.25v2.5A2.25 2.25 0 0 0 4.25 9h2.5A2.25 2.25 0 0 0 9 6.75v-2.5A2.25 2.25 0 0 0 6.75 2h-2.5Zm0 9A2.25 2.25 0 0 0 2 13.25v2.5A2.25 2.25 0 0 0 4.25 18h2.5A2.25 2.25 0 0 0 9 15.75v-2.5A2.25 2.25 0 0 0 6.75 11h-2.5Zm9-9A2.25 2.25 0 0 0 11 4.25v2.5A2.25 2.25 0 0 0 13.25 9h2.5A2.25 2.25 0 0 0 18 6.75v-2.5A2.25 2.25 0 0 0 15.75 2h-2.5Zm0 9A2.25 2.25 0 0 0 11 13.25v2.5A2.25 2.25 0 0 0 13.25 18h2.5A2.25 2.25 0 0 0 18 15.75v-2.5A2.25 2.25 0 0 0 15.75 11h-2.5Z" clipRule="evenodd" />
-                </svg>
-                Grid
+                Deck
               </button>
               <button
-                className={`tab ${dashViewMode === "table" ? "tab-active" : ""}`}
+                className={`px-3 py-1.5 rounded transition-colors ${dashViewMode === "table" ? "bg-base-100 shadow-sm text-base-content" : "text-base-content/40 hover:text-base-content/80"}`}
                 onClick={() => setDashViewMode("table")}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 mr-1">
-                  <path fillRule="evenodd" d="M.99 5.24A2.25 2.25 0 0 1 3.25 3h13.5A2.25 2.25 0 0 1 19 5.25l.01 9.5A2.25 2.25 0 0 1 16.76 17H3.26A2.25 2.25 0 0 1 1 14.75l-.01-9.51Zm8.26 9.52v-3.5H3.26a.75.75 0 0 0-.76.75v2a.75.75 0 0 0 .76.75h5.99Zm1.5 0h5.99a.75.75 0 0 0 .76-.75v-2a.75.75 0 0 0-.76-.75h-5.99v3.5Zm5.99-5h-5.99v-3.5h5.99a.75.75 0 0 0 .76-.75v-2a.75.75 0 0 0-.76-.75h-5.99v3.5Z" clipRule="evenodd" />
-                </svg>
-                Table
+                Log
               </button>
             </div>
           </div>
@@ -344,15 +328,14 @@ export default function Home() {
 
           {/* Errors */}
           {errorResults.length > 0 && (
-            <div className="space-y-2 animate-fade-up">
-              <h3 className="text-sm font-semibold text-error flex items-center gap-2">
-                ⚠️ Failed to process ({errorResults.length})
+            <div className="space-y-3 animate-fade-up mt-8 border-t border-error/20 pt-6">
+              <h3 className="text-sm font-semibold text-error tracking-tight">
+                PROCESSING ERRORS ({errorResults.length})
               </h3>
               {errorResults.map((r) => (
-                <div key={r.filename} className="alert alert-error alert-sm">
-                  <span>
-                    <strong>{r.filename}</strong>: {r.error}
-                  </span>
+                <div key={r.filename} className="p-3 bg-error/5 border border-error/10 rounded font-mono text-[10px] text-error">
+                  <span className="font-bold opacity-80 mr-2">[{r.filename}]</span> 
+                  {r.error}
                 </div>
               ))}
             </div>

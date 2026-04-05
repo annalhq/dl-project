@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { SongResult, SortField, SortDirection } from "../lib/types";
-import { pct, GENRE_EMOJI, GENRE_COLORS } from "../lib/constants";
+import { pct, GENRE_COLORS } from "../lib/constants";
 
 interface SongTableProps {
   results: SongResult[];
@@ -37,9 +37,9 @@ export default function SongTable({ results }: SongTableProps) {
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sortField !== field)
-      return <span className="text-base-content/20 ml-1">↕</span>;
+      return <span className="opacity-20 ml-2">↕</span>;
     return (
-      <span className="text-primary ml-1">{sortDir === "asc" ? "↑" : "↓"}</span>
+      <span className="text-base-content ml-2">{sortDir === "asc" ? "↑" : "↓"}</span>
     );
   };
 
@@ -52,29 +52,29 @@ export default function SongTable({ results }: SongTableProps) {
 
   return (
     <div className="overflow-x-auto animate-fade-up">
-      <table className="table table-zebra table-sm">
-        <thead>
+      <table className="table table-sm text-sm">
+        <thead className="font-mono text-[10px] uppercase tracking-widest text-base-content/40">
           <tr>
-            <th className="w-10">#</th>
+            <th className="w-12 font-normal pb-3">IDX</th>
             <th
-              className="cursor-pointer select-none hover:text-primary transition-colors"
+              className="cursor-pointer select-none hover:text-base-content transition-colors font-normal pb-3"
               onClick={() => handleSort("filename")}
             >
-              Filename <SortIcon field="filename" />
+              Identifier <SortIcon field="filename" />
             </th>
             <th
-              className="cursor-pointer select-none hover:text-primary transition-colors"
+              className="cursor-pointer select-none hover:text-base-content transition-colors font-normal pb-3"
               onClick={() => handleSort("genre")}
             >
-              Genre <SortIcon field="genre" />
+              Class <SortIcon field="genre" />
             </th>
             <th
-              className="cursor-pointer select-none hover:text-primary transition-colors w-40"
+              className="cursor-pointer select-none hover:text-base-content transition-colors w-40 font-normal pb-3"
               onClick={() => handleSort("confidence")}
             >
               Confidence <SortIcon field="confidence" />
             </th>
-            <th>Top 3 Probabilities</th>
+            <th className="font-normal pb-3">Distributions (Top 3)</th>
           </tr>
         </thead>
         <tbody>
@@ -83,17 +83,17 @@ export default function SongTable({ results }: SongTableProps) {
             const topProbs = getTopProbs(r);
 
             return (
-              <tr key={r.filename} className="hover">
-                <td className="text-base-content/40 font-mono text-xs">
-                  {i + 1}
+              <tr key={r.filename} className="hover:bg-base-content/5 transition-colors border-b border-base-content/5 group">
+                <td className="text-base-content/40 font-mono text-[10px]">
+                  {(i + 1).toString().padStart(3, "0")}
                 </td>
-                <td>
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium text-sm truncate max-w-[200px]">
+                <td className="py-3">
+                  <div className="flex items-center gap-3">
+                    <span className="font-medium text-[13px] truncate max-w-[200px] text-base-content/90">
                       {r.filename.replace(/\.mp3$/i, "")}
                     </span>
                     {r.error && (
-                      <span className="badge badge-error badge-xs">Error</span>
+                      <span className="border border-error/20 bg-error/10 text-error px-1.5 py-0.5 rounded text-[10px] font-mono tracking-widest uppercase">Error</span>
                     )}
                   </div>
                 </td>
@@ -107,39 +107,40 @@ export default function SongTable({ results }: SongTableProps) {
                         border: `1px solid ${genreColor?.border}`,
                       }}
                     >
-                      {GENRE_EMOJI[r.genre]} {r.genre}
+                      {r.genre}
                     </span>
                   ) : (
                     <span className="text-error text-xs">—</span>
                   )}
                 </td>
-                <td>
+                <td className="font-mono text-xs">
                   {r.confidence != null ? (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       <progress
-                        className="progress progress-primary w-20"
+                        className="progress progress-neutral w-20 h-1 bg-base-content/10"
                         value={Math.round(r.confidence * 100)}
                         max="100"
                       ></progress>
-                      <span className="text-xs font-semibold text-primary">
+                      <span className="text-[10px] tracking-widest text-base-content/80 w-8">
                         {pct(r.confidence)}
                       </span>
                     </div>
                   ) : (
-                    <span className="text-xs text-base-content/30">—</span>
+                    <span className="text-[10px] text-base-content/30">—</span>
                   )}
                 </td>
                 <td>
-                  <div className="flex gap-3">
+                  <div className="flex gap-4">
                     {topProbs.map(([g, v]) => (
                       <div
                         key={g}
-                        className="tooltip tooltip-bottom"
+                        className="tooltip tooltip-bottom tooltip-neutral"
                         data-tip={`${g}: ${pct(v)}`}
                       >
-                        <span className="text-xs text-base-content/60 capitalize">
-                          {GENRE_EMOJI[g]} {pct(v)}
-                        </span>
+                        <div className="flex flex-col text-[10px] font-mono uppercase tracking-widest items-start transition-opacity opacity-70 group-hover:opacity-100">
+                           <span className="text-base-content/80 font-medium">{g}</span>
+                           <span className="text-base-content/40">{pct(v)}</span>
+                        </div>
                       </div>
                     ))}
                   </div>

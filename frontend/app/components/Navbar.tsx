@@ -21,36 +21,35 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="navbar bg-base-100 shadow-sm px-4 lg:px-8 sticky top-0 z-50">
+    <nav className="navbar bg-base-100/50 backdrop-blur-md shadow-sm border-b border-base-content/5 px-4 lg:px-8 sticky top-0 z-50">
       <div className="navbar-start">
-        <span className="text-xl font-extrabold tracking-tight flex items-center gap-2">
-          <span className="text-2xl">🎵</span>
-          <span>SoundSort</span>
+        <span className="text-xl font-bold tracking-tight flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 opacity-80">
+            <path fillRule="evenodd" d="M19.952 1.651a.75.75 0 0 1 .298.599V16.303a3 3 0 0 1-2.176 2.884l-1.32.377a2.553 2.553 0 1 1-1.403-4.909l2.311-.66a1.5 1.5 0 0 0 1.088-1.442V6.994l-9 2.572v9.737a3 3 0 0 1-2.176 2.884l-1.32.377a2.553 2.553 0 1 1-1.402-4.909l2.31-.66a1.5 1.5 0 0 0 1.088-1.442V5.25a.75.75 0 0 1 .544-.721l10.5-3a.75.75 0 0 1 .456.122Z" clipRule="evenodd" />
+          </svg>
+          <span className="uppercase text-sm tracking-widest">SoundSort</span>
         </span>
       </div>
 
       <div className="navbar-center hidden sm:flex">
-        <span className="badge badge-primary badge-outline badge-sm font-medium gap-1">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3.5 h-3.5">
-            <path d="M15.98 1.804a1 1 0 0 0-1.96 0l-.24 1.192a1 1 0 0 1-.784.784l-1.192.238a1 1 0 0 0 0 1.962l1.192.238a1 1 0 0 1 .784.785l.238 1.192a1 1 0 0 0 1.962 0l.238-1.192a1 1 0 0 1 .785-.785l1.192-.238a1 1 0 0 0 0-1.962l-1.192-.238a1 1 0 0 1-.785-.784l-.238-1.192ZM6.949 5.684a1 1 0 0 0-1.898 0l-.683 2.051a1 1 0 0 1-.633.633l-2.051.683a1 1 0 0 0 0 1.898l2.051.684a1 1 0 0 1 .633.632l.683 2.051a1 1 0 0 0 1.898 0l.683-2.051a1 1 0 0 1 .633-.633l2.051-.683a1 1 0 0 0 0-1.898l-2.051-.683a1 1 0 0 1-.633-.633L6.95 5.684Z" />
-          </svg>
-          CNN Powered
+        <span className="text-xs uppercase tracking-widest text-base-content/40 font-semibold">
+          CNN Audio Intelligence
         </span>
       </div>
 
       <div className="navbar-end">
-        <div className="flex items-center gap-2 text-xs font-medium">
+        <div className="flex items-center gap-2 text-xs font-mono font-medium">
           {backendUp === null ? (
-            <span className="text-base-content/50">Checking...</span>
+             <span className="text-base-content/30 tracking-widest">STATUS: CHECKING</span>
           ) : backendUp ? (
             <>
-              <span className="status status-success status-sm"></span>
-              <span className="text-success">API Online</span>
+              <span className="w-2 h-2 rounded-full bg-success opacity-80 animate-pulse"></span>
+              <span className="text-base-content/60 tracking-widest">API: ONLINE</span>
             </>
           ) : (
             <>
-              <span className="status status-error status-sm"></span>
-              <span className="text-error">API Offline</span>
+              <span className="w-2 h-2 rounded-full bg-error opacity-80"></span>
+              <span className="text-base-content/60 tracking-widest">API: OFFLINE</span>
             </>
           )}
         </div>
