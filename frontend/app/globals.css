@@ -1,10 +1,30 @@
-/* ── Google Fonts ─────────────────────────────────────────── */
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap");
+/* ── Fonts ────────────────────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap");
+
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes:
-    pastel --default,
-    light;
+  themes: dark --default;
+}
+
+/* ── Theme Override (Refined Dark) ───────────────────────── */
+@theme {
+  --color-primary: oklch(72% 0.19 154);
+  --color-primary-content: oklch(15% 0.04 154);
+  --color-secondary: oklch(68% 0.16 250);
+  --color-secondary-content: oklch(15% 0.04 250);
+  --color-accent: oklch(75% 0.15 65);
+  --color-accent-content: oklch(15% 0.04 65);
+  --color-neutral: oklch(25% 0.01 260);
+  --color-neutral-content: oklch(90% 0.01 260);
+  --color-base-100: oklch(16% 0.01 260);
+  --color-base-200: oklch(13% 0.01 260);
+  --color-base-300: oklch(11% 0.008 260);
+  --color-base-content: oklch(92% 0.01 260);
+  --color-info: oklch(68% 0.16 250);
+  --color-success: oklch(72% 0.19 154);
+  --color-warning: oklch(82% 0.16 85);
+  --color-error: oklch(65% 0.2 25);
 }
 
 /* ── Base ─────────────────────────────────────────────────── */
@@ -12,58 +32,54 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body {
-  font-family: "Inter", system-ui, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
   min-height: 100vh;
   margin: 0;
-  background-color: oklch(var(--b2));
-  color: oklch(var(--bc));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Custom Selections ───────────────────────────────────── */
+/* ── Selection ────────────────────────────────────────────── */
 ::selection {
-  background-color: oklch(100% 0 0);
-  color: oklch(0% 0 0);
+  background-color: oklch(72% 0.19 154 / 0.35);
+  color: oklch(95% 0.01 154);
 }
 
-/* ── Scrollbar (Minimal) ─────────────────────────────────── */
+/* ── Scrollbar ────────────────────────────────────────────── */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: oklch(var(--bc) / 0.22);
+  background: oklch(40% 0.01 260);
   border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(var(--bc) / 0.36);
+  background: oklch(50% 0.01 260);
 }
 
-/* ── Upload dropzone ─────────────────────────────────────── */
-.dropzone {
-  border: 1px dashed oklch(var(--bc) / 0.22);
-  border-radius: 0.5rem;
-  background: transparent;
-  transition: all 0.2s ease;
-  cursor: pointer;
-}
-.dropzone:hover {
-  border-color: oklch(var(--bc) / 0.4);
-}
-.dropzone.drag-over {
-  border-color: oklch(var(--bc) / 0.48);
-  background: oklch(var(--bc) / 0.06);
-  box-shadow: 0 0 0 2px oklch(var(--bc) / 0.1);
+/* ── Monospace Elements ───────────────────────────────────── */
+.font-mono,
+code,
+pre,
+[class*="tabular-nums"] {
+  font-family: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
 }
 
 /* ── Animations ──────────────────────────────────────────── */
 @keyframes fadeSlideUp {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
@@ -71,107 +87,126 @@ body {
   }
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 oklch(72% 0.19 154 / 0.4); }
+  50% { box-shadow: 0 0 12px 4px oklch(72% 0.19 154 / 0.15); }
+}
+
 .animate-fade-up {
-  animation: fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* staggered children */
-.stagger > *:nth-child(1) {
-  animation-delay: 0.05s;
-}
-.stagger > *:nth-child(2) {
-  animation-delay: 0.1s;
-}
-.stagger > *:nth-child(3) {
-  animation-delay: 0.15s;
-}
-.stagger > *:nth-child(4) {
-  animation-delay: 0.2s;
-}
-.stagger > *:nth-child(5) {
-  animation-delay: 0.25s;
-}
-.stagger > *:nth-child(6) {
-  animation-delay: 0.3s;
-}
-.stagger > *:nth-child(7) {
-  animation-delay: 0.35s;
-}
-.stagger > *:nth-child(8) {
-  animation-delay: 0.4s;
-}
-.stagger > *:nth-child(9) {
-  animation-delay: 0.45s;
+.animate-fade-in {
+  animation: fadeIn 0.4s ease forwards;
 }
 
-/* ── Genre badge minimal ─────────────────────────────────── */
+/* Stagger children */
+.stagger > * {
+  opacity: 0;
+  animation: fadeSlideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.stagger > *:nth-child(2) { animation-delay: 0.08s; }
+.stagger > *:nth-child(3) { animation-delay: 0.12s; }
+.stagger > *:nth-child(4) { animation-delay: 0.16s; }
+.stagger > *:nth-child(5) { animation-delay: 0.20s; }
+.stagger > *:nth-child(6) { animation-delay: 0.24s; }
+.stagger > *:nth-child(7) { animation-delay: 0.28s; }
+.stagger > *:nth-child(8) { animation-delay: 0.32s; }
+.stagger > *:nth-child(9) { animation-delay: 0.36s; }
+
+/* ── Upload Dropzone ─────────────────────────────────────── */
+.dropzone {
+  border: 2px dashed oklch(40% 0.01 260);
+  border-radius: 1rem;
+  background: oklch(16% 0.01 260);
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+.dropzone:hover {
+  border-color: oklch(72% 0.19 154 / 0.5);
+  background: oklch(72% 0.19 154 / 0.05);
+}
+.dropzone.drag-over {
+  border-color: oklch(72% 0.19 154 / 0.7);
+  background: oklch(72% 0.19 154 / 0.08);
+  box-shadow: 0 0 0 4px oklch(72% 0.19 154 / 0.1);
+}
+
+/* ── Genre Badge ──────────────────────────────────────────── */
 .genre-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 0.25rem;
-  font-size: 0.75rem;
-  font-weight: 500;
+  gap: 0.3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 0.375rem;
+  font-size: 0.7rem;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
   transition: all 0.15s ease;
-  background-color: oklch(var(--b2));
-  color: oklch(var(--bc));
-  border: 1px solid oklch(var(--bc) / 0.16);
 }
 
-/* ── Progress bar minimal ────────────────────────────────── */
+/* ── Progress bar ─────────────────────────────────────────── */
 .progress {
   transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  border-radius: 0;
 }
 
-/* ── Card sleek minimal ──────────────────────────────────── */
-.card-border {
-  border: 1px solid oklch(var(--bc) / 0.12);
-  border-radius: 0.5rem;
-  background-color: oklch(var(--b1));
-}
+/* ── Card styles ──────────────────────────────────────────── */
 .card-hover-lift {
-  transition:
-    border-color 0.2s ease,
-    transform 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .card-hover-lift:hover {
-  border-color: oklch(var(--bc) / 0.24);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px oklch(0% 0 0 / 0.3);
+  border-color: oklch(40% 0.01 260);
 }
 
-/* ── Stat card responsive ────────────────────────────────── */
-@media (max-width: 768px) {
-  .stats-horizontal {
-    flex-direction: column;
-  }
-}
-
-/* ── File list item ──────────────────────────────────────── */
+/* ── File list rows ───────────────────────────────────────── */
 .file-list-item {
   transition: background-color 0.15s ease;
 }
 .file-list-item:hover {
-  background-color: oklch(var(--bc) / 0.05);
+  background-color: oklch(20% 0.01 260);
 }
 
-/* ── Utility overrides ───────────────────────────────────── */
+/* ── Table overrides ──────────────────────────────────────── */
 .table th,
 .table td {
-  border-color: oklch(var(--bc) / 0.12);
+  border-color: oklch(25% 0.01 260);
 }
+
+/* ── Button polish ────────────────────────────────────────── */
 .btn {
-  border-radius: 0.25rem;
-  font-weight: 500;
-  text-transform: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
 }
-.btn-primary {
-  background-color: oklch(var(--p));
-  color: oklch(var(--pc));
+.btn:active {
+  transform: scale(0.97);
 }
-.btn-primary:hover {
-  background-color: oklch(var(--pf));
-  border-color: transparent;
+
+/* ── Glass card effect utility ────────────────────────────── */
+.glass-card {
+  background: oklch(18% 0.01 260 / 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid oklch(30% 0.01 260);
+}
+
+/* ── Responsive stats ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .stats-horizontal {
+    flex-direction: column;
+  }
 }

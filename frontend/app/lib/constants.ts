@@ -19,27 +19,27 @@ export const GENRE_DESC: Record<string, string> = {
   rock: "Electric",
 };
 
-// Monochrome badge colors
+// Dark-optimized genre badge colors
 export const GENRE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  blues: { bg: "#e0f2fe", text: "#0c4a6e", border: "#7dd3fc" },
-  classical: { bg: "#ede9fe", text: "#4c1d95", border: "#c4b5fd" },
-  country: { bg: "#fef3c7", text: "#92400e", border: "#fcd34d" },
-  disco: { bg: "#fce7f3", text: "#9d174d", border: "#f9a8d4" },
-  hiphop: { bg: "#fee2e2", text: "#991b1b", border: "#fca5a5" },
-  metal: { bg: "#e5e7eb", text: "#1f2937", border: "#9ca3af" },
-  pop: { bg: "#dbeafe", text: "#1e3a8a", border: "#93c5fd" },
-  reggae: { bg: "#dcfce7", text: "#166534", border: "#86efac" },
-  rock: { bg: "#ffedd5", text: "#9a3412", border: "#fdba74" },
+  blues:     { bg: "rgba(56, 189, 248, 0.12)", text: "#7dd3fc", border: "rgba(56, 189, 248, 0.25)" },
+  classical: { bg: "rgba(167, 139, 250, 0.12)", text: "#c4b5fd", border: "rgba(167, 139, 250, 0.25)" },
+  country:   { bg: "rgba(251, 191, 36, 0.12)",  text: "#fcd34d", border: "rgba(251, 191, 36, 0.25)" },
+  disco:     { bg: "rgba(244, 114, 182, 0.12)", text: "#f9a8d4", border: "rgba(244, 114, 182, 0.25)" },
+  hiphop:    { bg: "rgba(248, 113, 113, 0.12)", text: "#fca5a5", border: "rgba(248, 113, 113, 0.25)" },
+  metal:     { bg: "rgba(148, 163, 184, 0.12)", text: "#cbd5e1", border: "rgba(148, 163, 184, 0.25)" },
+  pop:       { bg: "rgba(96, 165, 250, 0.12)",  text: "#93c5fd", border: "rgba(96, 165, 250, 0.25)" },
+  reggae:    { bg: "rgba(74, 222, 128, 0.12)",  text: "#86efac", border: "rgba(74, 222, 128, 0.25)" },
+  rock:      { bg: "rgba(251, 146, 60, 0.12)",  text: "#fdba74", border: "rgba(251, 146, 60, 0.25)" },
 };
 
 // ── Processing step labels ─────────────────────────────────────────────────
 export const STEP_LABELS: Record<string, string> = {
-  uploading: "Uploading",
-  converting_wav: "Converting to WAV",
-  extracting_segment: "Extracting Audio",
-  generating_spectrogram: "Generating Spectrogram",
-  analyzing: "CNN Analysis",
-  complete: "Complete",
+  uploading: "Upload",
+  converting_wav: "Convert",
+  extracting_segment: "Extract",
+  generating_spectrogram: "Spectrogram",
+  analyzing: "Analyze",
+  complete: "Done",
   error: "Error",
 };
 

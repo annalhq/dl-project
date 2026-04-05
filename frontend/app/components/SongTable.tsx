@@ -35,13 +35,28 @@ export default function SongTable({ results }: SongTableProps) {
     }
   });
 
-  const SortIcon = ({ field }: { field: SortField }) => (
-    <span
-      className={`ml-1.5 text-xs transition-opacity ${sortField === field ? "opacity-70" : "opacity-20"}`}
-    >
-      {sortField === field ? (sortDir === "asc" ? "↑" : "↓") : "↕"}
-    </span>
-  );
+  const SortIcon = ({ field }: { field: SortField }) => {
+    const isActive = sortField === field;
+    return (
+      <span className={`ml-1 inline-flex transition-all ${isActive ? "text-primary" : "text-base-content/20"}`}>
+        {isActive ? (
+          sortDir === "asc" ? (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3">
+              <path fillRule="evenodd" d="M11.78 9.78a.75.75 0 0 1-1.06 0L8 7.06 5.28 9.78a.75.75 0 0 1-1.06-1.06l3.25-3.25a.75.75 0 0 1 1.06 0l3.25 3.25a.75.75 0 0 1 0 1.06Z" clipRule="evenodd" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3">
+              <path fillRule="evenodd" d="M4.22 6.22a.75.75 0 0 1 1.06 0L8 8.94l2.72-2.72a.75.75 0 1 1 1.06 1.06l-3.25 3.25a.75.75 0 0 1-1.06 0L4.22 7.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+            </svg>
+          )
+        ) : (
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3 h-3">
+            <path fillRule="evenodd" d="M5.22 10.22a.75.75 0 0 1 1.06 0L8 11.94l1.72-1.72a.75.75 0 1 1 1.06 1.06l-2.25 2.25a.75.75 0 0 1-1.06 0l-2.25-2.25a.75.75 0 0 1 0-1.06ZM10.78 5.78a.75.75 0 0 1-1.06 0L8 4.06 6.28 5.78a.75.75 0 0 1-1.06-1.06l2.25-2.25a.75.75 0 0 1 1.06 0l2.25 2.25a.75.75 0 0 1 0 1.06Z" clipRule="evenodd" />
+          </svg>
+        )}
+      </span>
+    );
+  };
 
   const getTopProbs = (result: SongResult) => {
     if (!result.probabilities) return [];
@@ -50,36 +65,41 @@ export default function SongTable({ results }: SongTableProps) {
       .slice(0, 3);
   };
 
-  const cols: { label: string; field?: SortField; className?: string }[] = [
-    { label: "#", className: "w-10" },
-    { label: "File", field: "filename" },
-    { label: "Genre", field: "genre", className: "w-36" },
-    { label: "Confidence", field: "confidence", className: "w-44" },
-    { label: "Top 3", className: "w-56" },
-  ];
-
   return (
-    <div className="overflow-x-auto rounded-lg border border-base-content/8">
-      <table className="w-full border-collapse text-sm">
+    <div className="overflow-x-auto">
+      <table className="table table-sm">
         {/* Head */}
         <thead>
-          <tr className="border-b border-base-content/10 bg-base-200/50">
-            {cols.map(({ label, field, className }) => (
-              <th
-                key={label}
-                className={[
-                  "px-3 pb-2.5 pt-3 text-left font-mono text-xs uppercase tracking-[0.2em] text-base-content/60 font-normal",
-                  field
-                    ? "cursor-pointer select-none hover:text-base-content/90 transition-colors"
-                    : "",
-                  className ?? "",
-                ].join(" ")}
-                onClick={() => field && handleSort(field)}
-              >
-                {label}
-                {field && <SortIcon field={field} />}
-              </th>
-            ))}
+          <tr className="border-b border-base-content/10 text-xs uppercase tracking-wider">
+            <th className="w-12 font-medium text-base-content/40">#</th>
+            <th
+              className="font-medium text-base-content/50 cursor-pointer select-none hover:text-base-content transition-colors"
+              onClick={() => handleSort("filename")}
+            >
+              <span className="flex items-center">
+                File
+                <SortIcon field="filename" />
+              </span>
+            </th>
+            <th
+              className="w-32 font-medium text-base-content/50 cursor-pointer select-none hover:text-base-content transition-colors"
+              onClick={() => handleSort("genre")}
+            >
+              <span className="flex items-center">
+                Genre
+                <SortIcon field="genre" />
+              </span>
+            </th>
+            <th
+              className="w-44 font-medium text-base-content/50 cursor-pointer select-none hover:text-base-content transition-colors"
+              onClick={() => handleSort("confidence")}
+            >
+              <span className="flex items-center">
+                Confidence
+                <SortIcon field="confidence" />
+              </span>
+            </th>
+            <th className="w-64 font-medium text-base-content/40">Top 3 Predictions</th>
           </tr>
         </thead>
 
@@ -88,36 +108,38 @@ export default function SongTable({ results }: SongTableProps) {
           {sorted.map((r, i) => {
             const genreColor = r.genre ? GENRE_COLORS[r.genre] : null;
             const topProbs = getTopProbs(r);
+            const confPct = r.confidence ? Math.round(r.confidence * 100) : 0;
 
             return (
               <tr
                 key={r.filename}
-                className="group border-b border-base-content/6 bg-base-100 hover:bg-base-content/2.5 transition-colors"
+                className="hover border-b border-base-content/5"
               >
                 {/* Index */}
-                <td className="px-3 py-3 font-mono text-xs text-base-content/55 tabular-nums">
+                <td className="font-mono text-xs text-base-content/35 tabular-nums font-medium">
                   {(i + 1).toString().padStart(2, "0")}
                 </td>
 
                 {/* Filename */}
-                <td className="px-3 py-3 pr-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[13px] font-medium text-base-content/85 truncate max-w-55 tracking-tight">
+                <td>
+                  <div className="flex items-center gap-2.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 shrink-0 text-base-content/25">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m9 9 10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163Zm0 0V4.103" />
+                    </svg>
+                    <span className="text-sm font-medium text-base-content/80 truncate max-w-56">
                       {r.filename.replace(/\.mp3$/i, "")}
                     </span>
                     {r.error && (
-                      <span className="shrink-0 rounded px-1.5 py-0.5 font-mono text-xs uppercase tracking-widest border border-error/20 bg-error/8 text-error/75">
-                        err
-                      </span>
+                      <span className="badge badge-xs badge-error badge-outline">ERR</span>
                     )}
                   </div>
                 </td>
 
-                {/* Genre badge */}
-                <td className="px-3 py-3 pr-4">
+                {/* Genre */}
+                <td>
                   {r.genre ? (
                     <span
-                      className="inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium tracking-wide"
+                      className="inline-block rounded-md px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide"
                       style={{
                         backgroundColor: genreColor?.bg,
                         color: genreColor?.text,
@@ -131,19 +153,16 @@ export default function SongTable({ results }: SongTableProps) {
                   )}
                 </td>
 
-                {/* Confidence bar */}
-                <td className="px-3 py-3 pr-4">
+                {/* Confidence */}
+                <td>
                   {r.confidence != null ? (
-                    <div className="flex items-center gap-2.5">
-                      <div className="relative h-1 w-24 overflow-hidden rounded-full bg-base-content/8">
-                        <div
-                          className="absolute inset-y-0 left-0 rounded-full bg-base-content/40 transition-all"
-                          style={{
-                            width: `${Math.round(r.confidence * 100)}%`,
-                          }}
-                        />
-                      </div>
-                      <span className="font-mono text-[11px] tabular-nums text-base-content/50 w-8">
+                    <div className="flex items-center gap-3">
+                      <progress
+                        className={`progress w-20 h-1.5 ${confPct >= 80 ? "progress-success" : confPct >= 50 ? "progress-warning" : "progress-error"}`}
+                        value={confPct}
+                        max="100"
+                      />
+                      <span className="font-mono text-xs tabular-nums text-base-content/60 font-medium w-12">
                         {pct(r.confidence)}
                       </span>
                     </div>
@@ -152,18 +171,18 @@ export default function SongTable({ results }: SongTableProps) {
                   )}
                 </td>
 
-                {/* Top 3 distributions */}
-                <td className="px-3 py-3">
-                  <div className="flex items-center gap-3">
-                    {topProbs.map(([g, v]) => (
+                {/* Top 3 */}
+                <td>
+                  <div className="flex items-center gap-2">
+                    {topProbs.map(([g, v], j) => (
                       <div
                         key={g}
-                        className="rounded-md border border-base-content/10 bg-base-200/40 px-2 py-1.5 opacity-55 group-hover:opacity-95 transition-opacity"
+                        className={`inline-flex items-center gap-1.5 rounded-md border border-base-content/8 bg-base-200/50 px-2 py-1 transition-opacity ${j > 0 ? "opacity-50" : "opacity-80"}`}
                       >
-                        <span className="font-mono text-xs uppercase tracking-widest text-base-content/75">
+                        <span className="font-mono text-[10px] uppercase tracking-wider text-base-content/60 font-medium">
                           {g}
                         </span>
-                        <span className="font-mono text-xs tabular-nums text-base-content/60">
+                        <span className="font-mono text-[10px] tabular-nums text-base-content/40">
                           {pct(v)}
                         </span>
                       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Music, Loader2, Wifi, WifiOff } from "lucide-react";
 import { API_HEALTH } from "../lib/constants";
 
 export default function Navbar() {
@@ -23,58 +24,96 @@ export default function Navbar() {
   }, []);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-base-content/8 bg-base-100/70 backdrop-blur-lg">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 lg:px-8">
-        {/* Logo */}
-        <div className="flex items-center gap-2">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="h-4 w-4 text-base-content/60"
-          >
-            <path
-              fillRule="evenodd"
-              d="M19.952 1.651a.75.75 0 0 1 .298.599V16.303a3 3 0 0 1-2.176 2.884l-1.32.377a2.553 2.553 0 1 1-1.403-4.909l2.311-.66a1.5 1.5 0 0 0 1.088-1.442V6.994l-9 2.572v9.737a3 3 0 0 1-2.176 2.884l-1.32.377a2.553 2.553 0 1 1-1.402-4.909l2.31-.66a1.5 1.5 0 0 0 1.088-1.442V5.25a.75.75 0 0 1 .544-.721l10.5-3a.75.75 0 0 1 .456.122Z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <span className="text-sm font-semibold tracking-widest uppercase text-base-content">
-            SoundSort
-          </span>
-        </div>
+    <nav className="top-0 z-50 w-full">
+      {/* Glassmorphism container */}
+      <div className="relative mx-auto max-w-7xl px-4 pt-3 lg:px-8">
+        <div
+          className="relative overflow-hidden rounded-2xl border border-white/[0.08]
+                     bg-white/[0.03] shadow-[0_8px_32px_rgba(0,0,0,0.3)]
+                     [backdrop-filter:blur(24px)_saturate(180%)]
+                     [-webkit-backdrop-filter:blur(24px)_saturate(180%)]"
+        >
+          {/* Subtle top-edge light reflection */}
+          <div
+            className="pointer-events-none absolute inset-x-0 top-0 h-px
+                       bg-gradient-to-r from-transparent via-white/20 to-transparent"
+          />
 
-        {/* Center label — hidden on mobile */}
-        <span className="hidden sm:block text-xs tracking-widest uppercase text-base-content/50 font-medium select-none">
-          CNN Audio Intelligence
-        </span>
+          {/* Inner content */}
+          <div className="flex items-center justify-between px-4 py-2.5 lg:px-5">
+            {/* Logo */}
+            <div className="flex items-center gap-3">
+              <div
+                className="relative flex h-9 w-9 items-center justify-center rounded-xl
+                           bg-gradient-to-br from-primary/25 to-primary/5
+                           ring-1 ring-primary/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+              >
+                <Music className="h-[18px] w-[18px] text-primary" strokeWidth={2} />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[15px] font-bold tracking-tight leading-none text-base-content">
+                  Sound<span className="text-primary">Sort</span>
+                </span>
+                <span className="hidden sm:block text-[10px] font-medium tracking-[0.16em] uppercase text-base-content/30 mt-0.5">
+                  Audio Intelligence
+                </span>
+              </div>
+            </div>
 
-        {/* Status indicator */}
-        <div className="flex items-center gap-2">
-          {backendUp === null ? (
-            <span className="text-xs font-mono tracking-widest text-base-content/55 uppercase">
-              Checking…
-            </span>
-          ) : backendUp ? (
-            <>
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-success opacity-50" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-success" />
+            {/* Center label — desktop only */}
+            <div className="hidden md:flex items-center gap-2">
+              <div className="h-4 w-px bg-base-content/[0.08]" />
+              <span className="text-[11px] font-mono tracking-[0.18em] uppercase text-base-content/30 select-none">
+                CNN Audio Intelligence
               </span>
-              <span className="text-xs font-mono tracking-widest text-base-content/65 uppercase">
-                Online
-              </span>
-            </>
-          ) : (
-            <>
-              <span className="h-2 w-2 rounded-full bg-error" />
-              <span className="text-xs font-mono tracking-widest text-base-content/65 uppercase">
-                Offline
-              </span>
-            </>
-          )}
+              <div className="h-4 w-px bg-base-content/[0.08]" />
+            </div>
+
+            {/* Status indicator */}
+            <div className="flex items-center gap-2.5">
+              {backendUp === null ? (
+                <div
+                  className="flex items-center gap-2 rounded-lg border border-base-content/[0.06]
+                             bg-white/[0.03] px-3 py-1.5"
+                >
+                  <Loader2 className="h-3 w-3 animate-spin text-base-content/40" />
+                  <span className="text-[11px] font-mono font-medium text-base-content/40">
+                    Checking
+                  </span>
+                </div>
+              ) : backendUp ? (
+                <div
+                  className="flex items-center gap-2 rounded-lg border border-emerald-500/15
+                             bg-emerald-500/[0.06] px-3 py-1.5"
+                >
+                  <span className="relative flex h-2 w-2">
+                    <span
+                      className="absolute inline-flex h-full w-full animate-ping rounded-full
+                                 bg-emerald-400 opacity-50"
+                    />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                  </span>
+                  <span className="text-[11px] font-mono font-medium text-emerald-400/90">
+                    Online
+                  </span>
+                </div>
+              ) : (
+                <div
+                  className="flex items-center gap-2 rounded-lg border border-red-500/15
+                             bg-red-500/[0.06] px-3 py-1.5"
+                >
+                  <WifiOff className="h-3 w-3 text-red-400/80" />
+                  <span className="text-[11px] font-mono font-medium text-red-400/80">
+                    Offline
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
+      {/* Bottom spacing so content below doesn't overlap the floating bar */}
+      <div className="h-2" />
     </nav>
   );
 }

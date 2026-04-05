@@ -44,7 +44,7 @@ export default function UploadZone({ onFilesAdded }: UploadZoneProps) {
   const open = () => inputRef.current?.click();
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {/* Dropzone */}
       <div
         role="button"
@@ -59,51 +59,56 @@ export default function UploadZone({ onFilesAdded }: UploadZoneProps) {
         onDragLeave={() => setDragOver(false)}
         onDrop={onDrop}
         className={[
-          "group flex flex-col items-center justify-center gap-4 rounded-xl border border-dashed px-6 py-14 cursor-pointer",
-          "transition-colors duration-150 select-none outline-none",
-          "focus-visible:ring-2 focus-visible:ring-base-content/20",
+          "group relative flex flex-col items-center justify-center gap-5 rounded-2xl border-2 border-dashed px-6 py-16 cursor-pointer",
+          "transition-all duration-250 select-none outline-none",
+          "focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 focus-visible:ring-offset-base-100",
           dragOver
-            ? "border-base-content/30 bg-base-content/5"
-            : "border-base-content/15 hover:border-base-content/25 hover:bg-base-content/2",
+            ? "border-primary/60 bg-primary/8 shadow-lg shadow-primary/5"
+            : "border-base-content/15 hover:border-primary/40 hover:bg-base-content/3",
         ].join(" ")}
       >
-        {/* Icon */}
+        {/* Ambient glow on hover */}
+        <div className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-[radial-gradient(circle_at_50%_50%,oklch(72%_0.19_154_/_0.06),transparent_70%)]" />
+
+        {/* Upload icon */}
         <div
-          className={`transition-transform duration-200 text-base-content/30 ${dragOver ? "scale-110 text-base-content/50" : "group-hover:text-base-content/40"}`}
+          className={`relative transition-all duration-300 ${dragOver ? "scale-110 text-primary" : "text-base-content/30 group-hover:text-primary/70"}`}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={1.2}
-            stroke="currentColor"
-            className="w-10 h-10"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
-            />
-          </svg>
+          <div className="w-16 h-16 rounded-2xl bg-base-content/5 group-hover:bg-primary/10 flex items-center justify-center transition-colors duration-300">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-8 h-8"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
+              />
+            </svg>
+          </div>
         </div>
 
         {/* Copy */}
-        <div className="text-center space-y-1">
-          <p className="text-sm font-medium text-base-content/80 tracking-tight">
-            {dragOver ? "Drop to upload" : "Drop MP3s here"}
+        <div className="relative text-center space-y-2">
+          <p className="text-base font-semibold text-base-content/90">
+            {dragOver ? "Release to upload" : "Drop your MP3 files here"}
           </p>
-          <p className="text-xs text-base-content/35">
+          <p className="text-sm text-base-content/50">
             or{" "}
-            <span className="underline underline-offset-2 decoration-base-content/25 hover:text-base-content/60 transition-colors">
-              browse files
+            <span className="text-primary/80 font-medium underline underline-offset-4 decoration-primary/30 group-hover:decoration-primary/60 transition-colors">
+              browse from your computer
             </span>
           </p>
         </div>
 
         {/* Format badge */}
-        <span className="px-2 py-0.5 text-xs font-mono tracking-widest text-base-content/55 border border-base-content/10 rounded uppercase">
-          .mp3
-        </span>
+        <div className="relative badge badge-outline badge-sm font-mono tracking-widest text-base-content/50 border-base-content/15 px-3 py-2.5">
+          .MP3 FORMAT
+        </div>
 
         <input
           ref={inputRef}
@@ -115,25 +120,18 @@ export default function UploadZone({ onFilesAdded }: UploadZoneProps) {
         />
       </div>
 
-      {/* Rejected files notice */}
+      {/* Rejected files alert */}
       {rejected.length > 0 && (
-        <div className="flex items-center gap-2.5 rounded-lg border border-warning/20 bg-warning/8 px-3.5 py-2.5 text-xs text-warning-content/80">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-            className="h-3.5 w-3.5 shrink-0 text-warning/70"
-          >
-            <path
-              fillRule="evenodd"
-              d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
-              clipRule="evenodd"
-            />
+        <div role="alert" className="alert alert-warning shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
-          <span>
-            <strong className="font-semibold">{rejected.length}</strong> file
-            {rejected.length !== 1 ? "s" : ""} rejected — MP3 only
-          </span>
+          <div>
+            <h3 className="font-semibold text-sm">
+              {rejected.length} file{rejected.length !== 1 ? "s" : ""} rejected
+            </h3>
+            <p className="text-xs opacity-80">Only MP3 audio files are supported</p>
+          </div>
         </div>
       )}
     </div>

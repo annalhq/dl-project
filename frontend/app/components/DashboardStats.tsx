@@ -29,121 +29,84 @@ export default function DashboardStats({
     {
       label: "Processed",
       value: String(results.length),
-      helper: errorCount > 0 ? `${errorCount} failed` : "all successful",
-      fill: Math.min(100, Math.round((results.length / 20) * 100)),
-      detail: (
-        <div className="flex items-center gap-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-base-content/25" />
-          <span className="font-mono text-[9px] uppercase tracking-widest text-base-content/30">
-            {results.length - errorCount} ok
-          </span>
-          {errorCount > 0 && (
-            <>
-              <span className="text-base-content/15">·</span>
-              <span className="h-1.5 w-1.5 rounded-full bg-error/40" />
-              <span className="font-mono text-[9px] uppercase tracking-widest text-error/50">
-                {errorCount} err
-              </span>
-            </>
-          )}
-        </div>
+      sub: errorCount > 0 ? `${errorCount} failed` : "All successful",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 0 0-1.883 2.542l.857 6a2.25 2.25 0 0 0 2.227 1.932H19.05a2.25 2.25 0 0 0 2.227-1.932l.857-6a2.25 2.25 0 0 0-1.883-2.542m-16.5 0V6A2.25 2.25 0 0 1 6 3.75h3.879a1.5 1.5 0 0 1 1.06.44l2.122 2.12a1.5 1.5 0 0 0 1.06.44H18A2.25 2.25 0 0 1 20.25 9v.776" />
+        </svg>
       ),
+      color: "text-primary",
+      bgColor: "bg-primary/10",
     },
     {
       label: "Genre Classes",
       value: String(genreCount),
-      helper: "detected clusters",
-      fill: Math.min(100, Math.round((genreCount / 10) * 100)),
-      detail: (
-        <div className="flex gap-1">
-          {Array.from({ length: Math.min(genreCount, 10) }).map((_, i) => (
-            <div
-              key={i}
-              className="h-3 w-1 rounded-sm bg-base-content/20"
-              style={{
-                opacity: 0.15 + (i / Math.max(genreCount - 1, 1)) * 0.6,
-              }}
-            />
-          ))}
-          {genreCount > 10 && (
-            <span className="font-mono text-[9px] text-base-content/25 self-end ml-0.5">
-              +{genreCount - 10}
-            </span>
-          )}
-        </div>
+      sub: "Detected clusters",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6Z" />
+        </svg>
       ),
+      color: "text-secondary",
+      bgColor: "bg-secondary/10",
     },
     {
-      label: "Avg Confidence",
+      label: "Avg. Confidence",
       value: pct(avgConfidence),
-      helper: "mean probability",
-      fill: Math.round(avgConfidence * 100),
-      detail: (
-        <div className="flex items-end gap-px h-3">
-          {[0.2, 0.4, 0.6, 0.8, 1.0].map((threshold, i) => (
-            <div
-              key={i}
-              className="w-2 rounded-sm transition-all duration-300"
-              style={{
-                height: `${20 + i * 16}%`,
-                backgroundColor:
-                  avgConfidence >= threshold
-                    ? `rgba(var(--bc) / ${0.3 + i * 0.08})`
-                    : `rgba(var(--bc) / 0.06)`,
-              }}
-            />
-          ))}
-          <span className="font-mono text-[9px] uppercase tracking-widest text-base-content/25 ml-1.5 mb-px">
-            {avgConfidence >= 0.8
-              ? "high"
-              : avgConfidence >= 0.5
-                ? "mid"
-                : "low"}
-          </span>
-        </div>
+      sub: avgConfidence >= 0.8 ? "High certainty" : avgConfidence >= 0.5 ? "Moderate" : "Low certainty",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+        </svg>
       ),
+      color: "text-accent",
+      bgColor: "bg-accent/10",
     },
     {
       label: "Success Rate",
       value: `${successRate}%`,
-      helper: topGenre ? `top: ${topGenre}` : "no dominant genre",
-      fill: successRate,
-      detail: null,
+      sub: topGenre ? `Top: ${topGenre}` : "No dominant genre",
+      icon: (
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+      ),
+      color: "text-success",
+      bgColor: "bg-success/10",
     },
   ];
 
   return (
-    <section>
+    <section className="animate-fade-up">
       <div className="grid grid-cols-2 xl:grid-cols-4 gap-3">
         {stats.map((item) => (
-          <article
+          <div
             key={item.label}
-            className="rounded-lg border border-base-content/8 px-5 py-4 flex flex-col gap-3"
+            className="card bg-base-100 border border-base-content/8 hover:border-base-content/15 transition-colors shadow-sm"
           >
-            <p className="font-mono text-[9px] uppercase tracking-widest text-base-content/30">
-              {item.label}
-            </p>
+            <div className="card-body p-5 gap-3">
+              {/* Icon + label */}
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-medium uppercase tracking-wider text-base-content/45">
+                  {item.label}
+                </span>
+                <div className={`w-9 h-9 rounded-lg ${item.bgColor} ${item.color} flex items-center justify-center`}>
+                  {item.icon}
+                </div>
+              </div>
 
-            <p className="text-2xl font-semibold tracking-tight tabular-nums text-base-content/85">
-              {item.value}
-            </p>
+              {/* Value */}
+              <p className="text-3xl font-bold tracking-tight tabular-nums text-base-content">
+                {item.value}
+              </p>
 
-            <div className="flex flex-col gap-2 mt-auto">
-              {item.detail ?? (
-                <>
-                  <div className="h-px w-full bg-base-content/6 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-base-content/25 rounded-full transition-all duration-500"
-                      style={{ width: `${Math.max(4, item.fill)}%` }}
-                    />
-                  </div>
-                  <p className="font-mono text-[9px] uppercase tracking-widest text-base-content/25">
-                    {item.helper}
-                  </p>
-                </>
-              )}
+              {/* Subtitle */}
+              <p className="text-xs text-base-content/40 font-medium">
+                {item.sub}
+              </p>
             </div>
-          </article>
+          </div>
         ))}
       </div>
     </section>
