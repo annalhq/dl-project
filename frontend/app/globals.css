@@ -1,0 +1,192 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: nightcrawler --default;
+}
+
+/* ── Google Fonts ─────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* ── Base ─────────────────────────────────────────────────── */
+:root {
+  --color-bg: #080b14;
+  --color-surface: #0f1624;
+  --color-surface-alt: #131c2e;
+  --color-border: rgba(99, 130, 255, 0.15);
+  --color-primary: #6366f1;
+  --color-primary-glow: rgba(99, 102, 241, 0.35);
+  --color-accent: #a855f7;
+  --color-accent-glow: rgba(168, 85, 247, 0.3);
+  --color-text: #e2e8f0;
+  --color-muted: #64748b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* ── Scrollbar ────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 99px;
+}
+
+/* ── Gradient text helper ─────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, #818cf8 0%, #a78bfa 40%, #e879f9 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Glass card ───────────────────────────────────────────── */
+.glass-card {
+  background: rgba(15, 22, 36, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-border);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* ── Glowing border on hover ──────────────────────────────── */
+.glow-hover {
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.glow-hover:hover {
+  box-shadow: 0 0 0 1px var(--color-primary), 0 0 30px var(--color-primary-glow);
+  border-color: var(--color-primary);
+}
+
+/* ── Dropzone ─────────────────────────────────────────────── */
+.dropzone {
+  border: 2px dashed rgba(99, 102, 241, 0.4);
+  border-radius: 1.25rem;
+  background: rgba(99, 102, 241, 0.04);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.dropzone.drag-over {
+  border-color: var(--color-primary);
+  background: rgba(99, 102, 241, 0.12);
+  box-shadow: 0 0 40px var(--color-primary-glow);
+}
+
+/* ── Progress bar ─────────────────────────────────────────── */
+.genre-bar-fill {
+  height: 6px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ── Genre badge colors ───────────────────────────────────── */
+.badge-blues      { background: rgba(59, 130, 246, 0.2); color: #93c5fd; border-color: rgba(59,130,246,0.3); }
+.badge-classical  { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border-color: rgba(245,158,11,0.3); }
+.badge-country    { background: rgba(234, 179, 8, 0.2);  color: #fde68a; border-color: rgba(234,179,8,0.3); }
+.badge-disco      { background: rgba(236, 72, 153, 0.2); color: #f9a8d4; border-color: rgba(236,72,153,0.3); }
+.badge-hiphop     { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; border-color: rgba(168,85,247,0.3); }
+.badge-metal      { background: rgba(107, 114, 128, 0.2);color: #d1d5db; border-color: rgba(107,114,128,0.3); }
+.badge-pop        { background: rgba(239, 68, 68, 0.2);  color: #fca5a5; border-color: rgba(239,68,68,0.3); }
+.badge-reggae     { background: rgba(34, 197, 94, 0.2);  color: #86efac; border-color: rgba(34,197,94,0.3); }
+.badge-rock       { background: rgba(249, 115, 22, 0.2); color: #fdba74; border-color: rgba(249,115,22,0.3); }
+
+/* ── Section icon gradient colors ────────────────────────── */
+.icon-blues     { color: #60a5fa; }
+.icon-classical { color: #fbbf24; }
+.icon-country   { color: #facc15; }
+.icon-disco     { color: #f472b6; }
+.icon-hiphop    { color: #c084fc; }
+.icon-metal     { color: #9ca3af; }
+.icon-pop       { color: #f87171; }
+.icon-reggae    { color: #4ade80; }
+.icon-rock      { color: #fb923c; }
+
+/* ── Animations ───────────────────────────────────────────── */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px var(--color-primary-glow); }
+  50%       { box-shadow: 0 0 50px var(--color-primary-glow), 0 0 80px var(--color-accent-glow); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+.animate-fade-up {
+  animation: fadeSlideUp 0.5s ease forwards;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2.5s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 2s linear infinite;
+}
+
+/* staggered children */
+.stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger > *:nth-child(2) { animation-delay: 0.10s; }
+.stagger > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger > *:nth-child(4) { animation-delay: 0.20s; }
+.stagger > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger > *:nth-child(6) { animation-delay: 0.30s; }
+
+/* ── Hero background orbs ─────────────────────────────────── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+.orb-1 {
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%);
+  top: -150px; left: -100px;
+}
+.orb-2 {
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(168,85,247,0.15) 0%, transparent 70%);
+  top: 100px; right: -80px;
+}
+.orb-3 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(236,72,153,0.1) 0%, transparent 70%);
+  bottom: -50px; left: 40%;
+}
