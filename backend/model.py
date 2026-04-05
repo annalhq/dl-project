@@ -20,7 +20,7 @@ from tensorflow.keras.utils import load_img, img_to_array
 CLASS_LABELS = ['blues', 'classical', 'country', 'disco', 'hiphop', 'metal', 'pop', 'reggae', 'rock']
 
 # Model weights are in the sample/ folder (original Streamlit implementation)
-MODEL_WEIGHTS_PATH = os.path.join(os.path.dirname(__file__), '..', 'sample', 'CNNModelWeights.h5')
+MODEL_WEIGHTS_PATH = os.path.join(os.path.dirname(__file__), '..', 'sample', 'Model.h5')
 
 _model = None
 
