@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import Navbar from "./components/Navbar";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -21,8 +22,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${jakarta.variable} h-full`}>
-      <body className="min-h-full antialiased">{children}</body>
+    <html lang="en" data-theme="pastel" className={`${jakarta.variable} h-full`}>
+      <body className="min-h-full antialiased bg-base-200">
+        <Navbar />
+        <main className="min-h-[calc(100vh-4rem)]">{children}</main>
+        <footer className="footer footer-center bg-base-100 text-base-content/50 p-6 text-xs border-t border-base-300">
+          <div>
+            <p>
+              Built with{" "}
+              <span className="font-semibold">CNN</span> ·{" "}
+              <span className="font-semibold">FastAPI</span> ·{" "}
+              <span className="font-semibold">Next.js</span> ·{" "}
+              <span className="font-semibold">DaisyUI</span>
+            </p>
+          </div>
+        </footer>
+      </body>
     </html>
   );
 }

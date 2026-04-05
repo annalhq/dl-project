@@ -1,266 +1,50 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
+import { AppView, DashboardViewMode, SongResult, FileProgress } from "./lib/types";
+import { API_PREDICT_STREAM, API_PREDICT, GENRE_EMOJI, GENRES, pct } from "./lib/constants";
 
-// ── Types ──────────────────────────────────────────────────────────────────
-type Probabilities = Record<string, number>;
+import HeroSection from "./components/HeroSection";
+import UploadZone from "./components/UploadZone";
+import FileQueue from "./components/FileQueue";
+import AnalyzingProgress from "./components/AnalyzingProgress";
+import DashboardStats from "./components/DashboardStats";
+import GenreFilter from "./components/GenreFilter";
+import SongCard from "./components/SongCard";
+import SongTable from "./components/SongTable";
 
-interface SongResult {
-  filename: string;
-  genre: string | null;
-  confidence: number | null;
-  probabilities: Probabilities | null;
-  error?: string;
-}
+// ── CSV Export ─────────────────────────────────────────────────────────────
+function exportCSV(results: SongResult[]) {
+  const headers = ["Filename", "Genre", "Confidence", ...GENRES];
+  const rows = results.map((r) => [
+    r.filename,
+    r.genre ?? "error",
+    r.confidence != null ? (r.confidence * 100).toFixed(1) : "",
+    ...GENRES.map((g) =>
+      r.probabilities?.[g] != null ? (r.probabilities[g] * 100).toFixed(2) : ""
+    ),
+  ]);
 
-type ProcessingState = "idle" | "uploading" | "done";
-
-// ── Constants ──────────────────────────────────────────────────────────────
-const GENRES = [
-  "blues", "classical", "country", "disco",
-  "hiphop", "metal", "pop", "reggae", "rock",
-] as const;
-
-const GENRE_EMOJI: Record<string, string> = {
-  blues: "🎷", classical: "🎻", country: "🤠", disco: "🕺",
-  hiphop: "🎤", metal: "🤘", pop: "🎵", reggae: "🌴", rock: "🎸",
-};
-
-const GENRE_DESC: Record<string, string> = {
-  blues: "Soulful & expressive", classical: "Orchestral & timeless",
-  country: "Roots & storytelling", disco: "Groovy & danceable",
-  hiphop: "Rhythmic & lyrical", metal: "Heavy & powerful",
-  pop: "Catchy & melodic", reggae: "Laid-back & rhythmic",
-  rock: "Energetic & electric",
-};
-
-const API_URL = "http://localhost:8000/predict";
-
-// ── Helper: format confidence ──────────────────────────────────────────────
-function pct(v: number) {
-  return `${(v * 100).toFixed(1)}%`;
-}
-
-// ── Genre Badge ────────────────────────────────────────────────────────────
-function GenreBadge({ genre }: { genre: string }) {
-  return (
-    <span
-      className={`badge badge-${genre} border text-xs font-semibold px-3 py-1 rounded-full capitalize`}
-    >
-      {GENRE_EMOJI[genre]} {genre}
-    </span>
-  );
-}
-
-// ── Probability Bar ────────────────────────────────────────────────────────
-function ProbBar({
-  genre, value, isTop,
-}: { genre: string; value: number; isTop: boolean }) {
-  const [width, setWidth] = useState(0);
-
-  useEffect(() => {
-    const t = setTimeout(() => setWidth(value * 100), 50);
-    return () => clearTimeout(t);
-  }, [value]);
-
-  return (
-    <div className="flex items-center gap-3 text-sm">
-      <span
-        className={`w-20 capitalize text-right text-xs font-medium ${
-          isTop ? "text-indigo-300" : "text-slate-400"
-        }`}
-      >
-        {genre}
-      </span>
-      <div className="flex-1 bg-slate-800 rounded-full h-1.5 overflow-hidden">
-        <div
-          className="genre-bar-fill"
-          style={{
-            width: `${width}%`,
-            background: isTop
-              ? "linear-gradient(90deg,#6366f1,#a855f7)"
-              : "rgba(148,163,184,0.4)",
-          }}
-        />
-      </div>
-      <span className={`w-12 text-right text-xs ${isTop ? "text-indigo-300 font-semibold" : "text-slate-500"}`}>
-        {pct(value)}
-      </span>
-    </div>
-  );
-}
-
-// ── Song Card ──────────────────────────────────────────────────────────────
-function SongCard({ result, index }: { result: SongResult; index: number }) {
-  const [expanded, setExpanded] = useState(false);
-  const name = result.filename.replace(/\.mp3$/i, "");
-
-  if (result.error) {
-    return (
-      <div
-        className="glass-card p-4 animate-fade-up"
-        style={{ animationDelay: `${index * 60}ms`, opacity: 0 }}
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center text-red-400">⚠</div>
-          <div>
-            <p className="font-semibold text-sm text-slate-200">{name}</p>
-            <p className="text-xs text-red-400 mt-0.5">{result.error}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const sortedProbs = result.probabilities
-    ? Object.entries(result.probabilities).sort((a, b) => b[1] - a[1])
-    : [];
-
-  return (
-    <div
-      className="glass-card glow-hover animate-fade-up"
-      style={{ animationDelay: `${index * 60}ms`, opacity: 0 }}
-    >
-      <div className="p-5">
-        {/* Header */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div
-              className={`w-10 h-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-xl flex-shrink-0 icon-${result.genre}`}
-            >
-              {GENRE_EMOJI[result.genre!] ?? "🎵"}
-            </div>
-            <div className="min-w-0">
-              <p className="font-semibold text-sm text-slate-100 truncate" title={name}>
-                {name}
-              </p>
-              <p className="text-xs text-slate-500 mt-0.5">{result.filename}</p>
-            </div>
-          </div>
-          <GenreBadge genre={result.genre!} />
-        </div>
-
-        {/* Confidence */}
-        <div className="mt-4">
-          <div className="flex justify-between text-xs mb-1.5">
-            <span className="text-slate-400">Confidence</span>
-            <span className="text-indigo-300 font-semibold">{pct(result.confidence!)}</span>
-          </div>
-          <div className="bg-slate-800 rounded-full h-2 overflow-hidden">
-            <ConfidenceBar value={result.confidence!} />
-          </div>
-        </div>
-
-        {/* Toggle details */}
-        <button
-          onClick={() => setExpanded((e) => !e)}
-          className="mt-3 text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
-          aria-expanded={expanded}
-          aria-controls={`probs-${result.filename}`}
-        >
-          <span>{expanded ? "Hide" : "Show"} all probabilities</span>
-          <span className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}>▾</span>
-        </button>
-
-        {/* Probability breakdown */}
-        {expanded && (
-          <div
-            id={`probs-${result.filename}`}
-            className="mt-3 space-y-2 border-t border-slate-800 pt-3"
-          >
-            {sortedProbs.map(([g, v]) => (
-              <ProbBar key={g} genre={g} value={v} isTop={g === result.genre} />
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function ConfidenceBar({ value }: { value: number }) {
-  const [width, setWidth] = useState(0);
-  useEffect(() => {
-    const t = setTimeout(() => setWidth(value * 100), 80);
-    return () => clearTimeout(t);
-  }, [value]);
-  return <div className="genre-bar-fill" style={{ width: `${width}%` }} />;
-}
-
-// ── Genre Section (groups songs of same genre) ─────────────────────────────
-function GenreSection({
-  genre, songs,
-}: { genre: string; songs: SongResult[] }) {
-  return (
-    <div className="animate-fade-up" style={{ opacity: 0 }}>
-      {/* Section header */}
-      <div className="flex items-center gap-4 mb-4">
-        <div
-          className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl bg-slate-800/60 icon-${genre} flex-shrink-0`}
-        >
-          {GENRE_EMOJI[genre] ?? "🎵"}
-        </div>
-        <div>
-          <h2 className="text-lg font-bold capitalize text-slate-100">
-            {genre}
-          </h2>
-          <p className="text-xs text-slate-500">
-            {GENRE_DESC[genre]} · {songs.length} song{songs.length !== 1 ? "s" : ""}
-          </p>
-        </div>
-        <div className="ml-auto">
-          <span className="badge badge-outline text-slate-400 border-slate-700 text-xs">
-            {songs.length}
-          </span>
-        </div>
-      </div>
-
-      {/* Song cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger">
-        {songs.map((s, i) => (
-          <SongCard key={s.filename} result={s} index={i} />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-// ── File Chip (shown in upload zone) ──────────────────────────────────────
-function FileChip({ name, onRemove }: { name: string; onRemove: () => void }) {
-  return (
-    <div className="flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-3 py-1.5 text-xs text-indigo-300">
-      <span className="truncate max-w-[160px]">{name.replace(/\.mp3$/i, "")}</span>
-      <button
-        onClick={onRemove}
-        className="text-indigo-400 hover:text-red-400 transition-colors flex-shrink-0"
-        aria-label={`Remove ${name}`}
-      >
-        ✕
-      </button>
-    </div>
-  );
+  const csv = [headers, ...rows].map((row) => row.join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `soundsort-results-${Date.now()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ── Main Page ──────────────────────────────────────────────────────────────
 export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
-  const [state, setState] = useState<ProcessingState>("idle");
+  const [view, setView] = useState<AppView>("upload");
   const [results, setResults] = useState<SongResult[]>([]);
-  const [dragOver, setDragOver] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [fileProgresses, setFileProgresses] = useState<Map<string, FileProgress>>(new Map());
+  const [dashViewMode, setDashViewMode] = useState<DashboardViewMode>("grid");
+  const [activeGenre, setActiveGenre] = useState<string | null>(null);
 
-  // Group results by genre
-  const grouped = results.reduce<Record<string, SongResult[]>>((acc, r) => {
-    if (r.genre) {
-      acc[r.genre] = [...(acc[r.genre] ?? []), r];
-    }
-    return acc;
-  }, {});
-
-  // Sort genres by count (most songs first)
-  const sortedGenres = Object.entries(grouped).sort((a, b) => b[1].length - a[1].length);
-  const errorResults = results.filter((r) => r.error);
-
+  // ── File Management ────────────────────────────────────────────────────
   const addFiles = useCallback((incoming: FileList | File[]) => {
     const mp3s = Array.from(incoming).filter((f) =>
       f.name.toLowerCase().endsWith(".mp3")
@@ -275,229 +59,306 @@ export default function Home() {
     setFiles((prev) => prev.filter((f) => f.name !== name));
   };
 
-  const onDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault();
-      setDragOver(false);
-      addFiles(e.dataTransfer.files);
-    },
-    [addFiles]
-  );
-
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) addFiles(e.target.files);
-    e.target.value = "";
-  };
-
+  // ── Classification with SSE ────────────────────────────────────────────
   const handleClassify = async () => {
     if (!files.length) return;
-    setState("uploading");
+
+    setView("analyzing");
     setResults([]);
+    setFileProgresses(new Map());
 
     const formData = new FormData();
     files.forEach((f) => formData.append("files", f));
 
     try {
-      const res = await fetch(API_URL, { method: "POST", body: formData });
-      if (!res.ok) throw new Error(`Server error: ${res.status}`);
-      const data = await res.json();
-      setResults(data.results);
-    } catch (err) {
-      setResults(
-        files.map((f) => ({
-          filename: f.name,
-          genre: null,
-          confidence: null,
-          probabilities: null,
-          error: err instanceof Error ? err.message : "Unknown error",
-        }))
-      );
-    } finally {
-      setState("done");
+      // Try SSE endpoint first
+      const res = await fetch(API_PREDICT_STREAM, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok || !res.body) {
+        throw new Error("SSE not available");
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      const collectedResults: SongResult[] = [];
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() || "";
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6).trim();
+          if (!jsonStr) continue;
+
+          try {
+            const event = JSON.parse(jsonStr);
+
+            if (event.done) {
+              // Stream complete
+              setResults([...collectedResults]);
+              setView("dashboard");
+              return;
+            }
+
+            const fp: FileProgress = {
+              filename: event.file,
+              step: event.step,
+              progress: event.progress,
+              result: event.result,
+              error: event.error,
+            };
+
+            setFileProgresses((prev) => {
+              const next = new Map(prev);
+              next.set(event.file, fp);
+              return next;
+            });
+
+            if (event.step === "complete" && event.result) {
+              collectedResults.push(event.result);
+              setResults([...collectedResults]);
+            } else if (event.step === "error") {
+              collectedResults.push({
+                filename: event.file,
+                genre: null,
+                confidence: null,
+                probabilities: null,
+                error: event.error || "Unknown error",
+              });
+              setResults([...collectedResults]);
+            }
+          } catch {
+            // Skip malformed JSON
+          }
+        }
+      }
+
+      // If we exit the loop normally, transition to dashboard
+      if (collectedResults.length > 0) {
+        setResults([...collectedResults]);
+      }
+      setView("dashboard");
+    } catch {
+      // Fallback to regular /predict endpoint
+      try {
+        const formData2 = new FormData();
+        files.forEach((f) => formData2.append("files", f));
+
+        const res = await fetch(API_PREDICT, {
+          method: "POST",
+          body: formData2,
+        });
+        if (!res.ok) throw new Error(`Server error: ${res.status}`);
+        const data = await res.json();
+        setResults(data.results);
+      } catch (err) {
+        setResults(
+          files.map((f) => ({
+            filename: f.name,
+            genre: null,
+            confidence: null,
+            probabilities: null,
+            error: err instanceof Error ? err.message : "Unknown error",
+          }))
+        );
+      }
+      setView("dashboard");
     }
   };
 
   const reset = () => {
     setFiles([]);
     setResults([]);
-    setState("idle");
+    setView("upload");
+    setActiveGenre(null);
+    setFileProgresses(new Map());
   };
 
+  // ── Computed values for dashboard ──────────────────────────────────────
+  const grouped = results.reduce<Record<string, SongResult[]>>((acc, r) => {
+    if (r.genre) {
+      acc[r.genre] = [...(acc[r.genre] ?? []), r];
+    }
+    return acc;
+  }, {});
+
+  const sortedGenres = Object.entries(grouped)
+    .sort((a, b) => b[1].length - a[1].length);
+
+  const genreCounts = Object.fromEntries(sortedGenres.map(([g, songs]) => [g, songs.length]));
+  const detectedGenres = sortedGenres.map(([g]) => g);
+  const topGenre = sortedGenres.length > 0 ? sortedGenres[0][0] : null;
+  const errorResults = results.filter((r) => r.error);
+
+  const filteredResults = activeGenre
+    ? results.filter((r) => r.genre === activeGenre)
+    : results.filter((r) => r.genre);
+
+  // ── Render ─────────────────────────────────────────────────────────────
   return (
-    <main className="relative min-h-screen overflow-x-hidden">
-      {/* Background orbs */}
-      <div className="orb orb-1" />
-      <div className="orb orb-2" />
-      <div className="orb orb-3" />
+    <div className="max-w-6xl mx-auto px-4 pb-16">
+      {/* ── Upload View ── */}
+      {view === "upload" && (
+        <>
+          <HeroSection />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-4 py-16">
+          <div className="card card-border bg-base-100 shadow-sm p-6 sm:p-8 mb-6">
+            <UploadZone onFilesAdded={addFiles} />
 
-        {/* ── Hero ── */}
-        <header className="text-center mb-14">
-          <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full px-4 py-1.5 text-xs text-indigo-300 font-medium mb-6">
-            <span className="w-2 h-2 rounded-full bg-indigo-400 animate-pulse inline-block" />
-            Powered by CNN Deep Learning
-          </div>
-          <h1 className="text-5xl sm:text-6xl font-extrabold mb-4 leading-tight">
-            <span className="gradient-text">SoundSort</span>
-          </h1>
-          <p className="text-slate-400 text-lg max-w-xl mx-auto leading-relaxed">
-            Upload your MP3 files and our AI instantly classifies each song into its genre —
-            perfect for auditions, playlist curation & music organization.
-          </p>
-          <div className="flex flex-wrap justify-center gap-2 mt-6">
-            {GENRES.map((g) => (
-              <span key={g} className={`badge badge-${g} border text-xs font-medium px-3 py-1 rounded-full capitalize`}>
-                {GENRE_EMOJI[g]} {g}
-              </span>
-            ))}
-          </div>
-        </header>
-
-        {/* ── Upload Section ── */}
-        {state !== "done" && (
-          <div className="glass-card p-8 mb-10 animate-fade-up" style={{ opacity: 0 }}>
-            {/* Dropzone */}
-            <div
-              id="dropzone"
-              role="button"
-              tabIndex={0}
-              aria-label="Upload MP3 files"
-              className={`dropzone flex flex-col items-center justify-center py-14 gap-4 ${dragOver ? "drag-over" : ""}`}
-              onClick={() => inputRef.current?.click()}
-              onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
-              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
-              onDrop={onDrop}
-            >
-              <div className={`text-5xl animate-float ${dragOver ? "scale-125" : ""} transition-transform duration-200`}>
-                🎵
-              </div>
-              <div className="text-center">
-                <p className="text-slate-200 font-semibold text-lg">
-                  Drop MP3 files here
-                </p>
-                <p className="text-slate-500 text-sm mt-1">
-                  or <span className="text-indigo-400 underline cursor-pointer">click to browse</span>
-                </p>
-              </div>
-              <input
-                ref={inputRef}
-                type="file"
-                id="file-input"
-                className="hidden"
-                accept=".mp3,audio/mpeg"
-                multiple
-                onChange={onFileChange}
-              />
-            </div>
-
-            {/* File chips */}
             {files.length > 0 && (
-              <div className="mt-6">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-sm text-slate-400">
-                    <span className="text-indigo-300 font-semibold">{files.length}</span> file{files.length !== 1 ? "s" : ""} selected
-                  </span>
+              <>
+                <div className="divider text-xs text-base-content/40">
+                  Ready to classify
+                </div>
+                <FileQueue
+                  files={files}
+                  onRemove={removeFile}
+                  onClearAll={() => setFiles([])}
+                />
+
+                {/* Classify button */}
+                <div className="mt-6 flex justify-center">
                   <button
-                    onClick={() => setFiles([])}
-                    className="text-xs text-slate-500 hover:text-red-400 transition-colors"
+                    id="classify-btn"
+                    onClick={handleClassify}
+                    disabled={!files.length}
+                    className="btn btn-primary btn-lg gap-2 shadow-md"
                   >
-                    Clear all
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                      <path d="M15.98 1.804a1 1 0 0 0-1.96 0l-.24 1.192a1 1 0 0 1-.784.784l-1.192.238a1 1 0 0 0 0 1.962l1.192.238a1 1 0 0 1 .784.785l.238 1.192a1 1 0 0 0 1.962 0l.238-1.192a1 1 0 0 1 .785-.785l1.192-.238a1 1 0 0 0 0-1.962l-1.192-.238a1 1 0 0 1-.785-.784l-.238-1.192ZM6.949 5.684a1 1 0 0 0-1.898 0l-.683 2.051a1 1 0 0 1-.633.633l-2.051.683a1 1 0 0 0 0 1.898l2.051.684a1 1 0 0 1 .633.632l.683 2.051a1 1 0 0 0 1.898 0l.683-2.051a1 1 0 0 1 .633-.633l2.051-.683a1 1 0 0 0 0-1.898l-2.051-.683a1 1 0 0 1-.633-.633L6.95 5.684Z" />
+                    </svg>
+                    Classify {files.length} Song{files.length !== 1 ? "s" : ""}
                   </button>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {files.map((f) => (
-                    <FileChip key={f.name} name={f.name} onRemove={() => removeFile(f.name)} />
-                  ))}
-                </div>
-              </div>
+              </>
             )}
+          </div>
+        </>
+      )}
 
-            {/* Classify button */}
-            <div className="mt-6 flex justify-center">
+      {/* ── Analyzing View ── */}
+      {view === "analyzing" && (
+        <div className="py-12">
+          <AnalyzingProgress
+            fileProgresses={fileProgresses}
+            totalFiles={files.length}
+            completedResults={results}
+          />
+        </div>
+      )}
+
+      {/* ── Dashboard View ── */}
+      {view === "dashboard" && results.length > 0 && (
+        <div className="py-8 space-y-6">
+          {/* Stats */}
+          <DashboardStats
+            results={results}
+            genreCount={detectedGenres.length}
+            topGenre={topGenre}
+          />
+
+          {/* Action bar */}
+          <div className="flex flex-wrap items-center justify-between gap-3 animate-fade-up">
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-bold">Results</h2>
+              <span className="badge badge-primary badge-sm">{results.length}</span>
+            </div>
+            <div className="flex items-center gap-2">
               <button
-                id="classify-btn"
-                onClick={handleClassify}
-                disabled={!files.length || state === "uploading"}
-                className="btn bg-indigo-600 hover:bg-indigo-500 text-white border-0 rounded-xl px-10 py-3 font-semibold text-base transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/20 hover:shadow-indigo-500/40"
+                onClick={() => exportCSV(results)}
+                className="btn btn-ghost btn-sm gap-1"
               >
-                {state === "uploading" ? (
-                  <span className="flex items-center gap-3">
-                    <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin-slow" />
-                    Analyzing {files.length} song{files.length !== 1 ? "s" : ""}…
-                  </span>
-                ) : (
-                  `✦ Classify ${files.length || ""} Song${files.length !== 1 ? "s" : ""}`
-                )}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                  <path d="M10.75 2.75a.75.75 0 0 0-1.5 0v8.614L6.295 8.235a.75.75 0 1 0-1.09 1.03l4.25 4.5a.75.75 0 0 0 1.09 0l4.25-4.5a.75.75 0 0 0-1.09-1.03l-2.955 3.129V2.75Z" />
+                  <path d="M3.5 12.75a.75.75 0 0 0-1.5 0v2.5A2.75 2.75 0 0 0 4.75 18h10.5A2.75 2.75 0 0 0 18 15.25v-2.5a.75.75 0 0 0-1.5 0v2.5c0 .69-.56 1.25-1.25 1.25H4.75c-.69 0-1.25-.56-1.25-1.25v-2.5Z" />
+                </svg>
+                Export CSV
+              </button>
+              <button
+                id="classify-again-btn"
+                onClick={reset}
+                className="btn btn-outline btn-primary btn-sm gap-1"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
+                  <path fillRule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H4.28a.75.75 0 0 0-.75.75v3.955a.75.75 0 0 0 1.5 0v-2.134l.235.234A7 7 0 0 0 17 11.424a.75.75 0 0 0-1.688 0ZM4.688 8.576a5.5 5.5 0 0 1 9.201-2.466l.312.311H11.77a.75.75 0 0 0 0 1.5h3.952a.75.75 0 0 0 .75-.75V3.216a.75.75 0 0 0-1.5 0v2.134l-.235-.234A7 7 0 0 0 3 8.576a.75.75 0 0 0 1.688 0Z" clipRule="evenodd" />
+                </svg>
+                New Upload
               </button>
             </div>
           </div>
-        )}
 
-        {/* ── Results ── */}
-        {state === "done" && results.length > 0 && (
-          <div>
-            {/* Summary bar */}
-            <div className="glass-card p-5 mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-fade-up" style={{ opacity: 0 }}>
-              <div>
-                <p className="text-slate-200 font-bold text-lg">
-                  ✦ Classification Complete
-                </p>
-                <p className="text-slate-500 text-sm mt-0.5">
-                  {results.length} song{results.length !== 1 ? "s" : ""} across{" "}
-                  <span className="text-indigo-300 font-semibold">
-                    {sortedGenres.length} genre{sortedGenres.length !== 1 ? "s" : ""}
-                  </span>
-                </p>
-              </div>
-              <div className="flex items-center gap-3">
-                {/* Mini genre summary pills */}
-                <div className="flex flex-wrap gap-2">
-                  {sortedGenres.map(([g, songs]) => (
-                    <span key={g} className={`badge badge-${g} border text-xs px-2.5 py-1 rounded-full capitalize font-medium`}>
-                      {GENRE_EMOJI[g]} {g} · {songs.length}
-                    </span>
-                  ))}
-                </div>
-                <button
-                  id="classify-again-btn"
-                  onClick={reset}
-                  className="btn btn-sm bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700 rounded-xl text-xs"
-                >
-                  ↺ New Upload
-                </button>
-              </div>
+          {/* Filter + View toggle */}
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <GenreFilter
+              genres={detectedGenres}
+              genreCounts={genreCounts}
+              activeGenre={activeGenre}
+              onSelect={setActiveGenre}
+            />
+            <div className="tabs tabs-box tabs-sm">
+              <button
+                className={`tab ${dashViewMode === "grid" ? "tab-active" : ""}`}
+                onClick={() => setDashViewMode("grid")}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 mr-1">
+                  <path fillRule="evenodd" d="M4.25 2A2.25 2.25 0 0 0 2 4.25v2.5A2.25 2.25 0 0 0 4.25 9h2.5A2.25 2.25 0 0 0 9 6.75v-2.5A2.25 2.25 0 0 0 6.75 2h-2.5Zm0 9A2.25 2.25 0 0 0 2 13.25v2.5A2.25 2.25 0 0 0 4.25 18h2.5A2.25 2.25 0 0 0 9 15.75v-2.5A2.25 2.25 0 0 0 6.75 11h-2.5Zm9-9A2.25 2.25 0 0 0 11 4.25v2.5A2.25 2.25 0 0 0 13.25 9h2.5A2.25 2.25 0 0 0 18 6.75v-2.5A2.25 2.25 0 0 0 15.75 2h-2.5Zm0 9A2.25 2.25 0 0 0 11 13.25v2.5A2.25 2.25 0 0 0 13.25 18h2.5A2.25 2.25 0 0 0 18 15.75v-2.5A2.25 2.25 0 0 0 15.75 11h-2.5Z" clipRule="evenodd" />
+                </svg>
+                Grid
+              </button>
+              <button
+                className={`tab ${dashViewMode === "table" ? "tab-active" : ""}`}
+                onClick={() => setDashViewMode("table")}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 mr-1">
+                  <path fillRule="evenodd" d="M.99 5.24A2.25 2.25 0 0 1 3.25 3h13.5A2.25 2.25 0 0 1 19 5.25l.01 9.5A2.25 2.25 0 0 1 16.76 17H3.26A2.25 2.25 0 0 1 1 14.75l-.01-9.51Zm8.26 9.52v-3.5H3.26a.75.75 0 0 0-.76.75v2a.75.75 0 0 0 .76.75h5.99Zm1.5 0h5.99a.75.75 0 0 0 .76-.75v-2a.75.75 0 0 0-.76-.75h-5.99v3.5Zm5.99-5h-5.99v-3.5h5.99a.75.75 0 0 0 .76-.75v-2a.75.75 0 0 0-.76-.75h-5.99v3.5Z" clipRule="evenodd" />
+                </svg>
+                Table
+              </button>
             </div>
+          </div>
 
-            {/* Genre sections */}
-            <div className="space-y-10">
-              {sortedGenres.map(([genre, songs]) => (
-                <GenreSection key={genre} genre={genre} songs={songs} />
+          {/* Grid View */}
+          {dashViewMode === "grid" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger">
+              {filteredResults.map((r, i) => (
+                <SongCard key={r.filename} result={r} index={i} />
               ))}
             </div>
+          )}
 
-            {/* Errors section */}
-            {errorResults.length > 0 && (
-              <div className="mt-10">
-                <h2 className="text-sm font-semibold text-red-400 mb-3 flex items-center gap-2">
-                  <span>⚠</span> Failed to process ({errorResults.length})
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {errorResults.map((r, i) => (
-                    <SongCard key={r.filename} result={r} index={i} />
-                  ))}
+          {/* Table View */}
+          {dashViewMode === "table" && (
+            <div className="card card-border bg-base-100 shadow-sm">
+              <SongTable results={filteredResults} />
+            </div>
+          )}
+
+          {/* Errors */}
+          {errorResults.length > 0 && (
+            <div className="space-y-2 animate-fade-up">
+              <h3 className="text-sm font-semibold text-error flex items-center gap-2">
+                ⚠️ Failed to process ({errorResults.length})
+              </h3>
+              {errorResults.map((r) => (
+                <div key={r.filename} className="alert alert-error alert-sm">
+                  <span>
+                    <strong>{r.filename}</strong>: {r.error}
+                  </span>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── Footer ── */}
-        <footer className="text-center mt-20 text-xs text-slate-600">
-          Built with CNN · FastAPI · Next.js · DaisyUI
-        </footer>
-      </div>
-    </main>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
   );
 }

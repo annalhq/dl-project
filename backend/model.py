@@ -54,8 +54,11 @@ def get_model():
     return _model
 
 
-def mp3_to_spectrogram(mp3_bytes: bytes, tmp_dir: str) -> str:
-    """Convert raw MP3 bytes → mel spectrogram PNG. Returns PNG path."""
+def mp3_to_spectrogram(mp3_bytes: bytes, tmp_dir: str, on_progress=None) -> str:
+    """Convert raw MP3 bytes → mel spectrogram PNG. Returns PNG path.
+    
+    on_progress: optional callback(step_name: str) called at each stage.
+    """
     mp3_path = os.path.join(tmp_dir, 'input.mp3')
     wav_path = os.path.join(tmp_dir, 'music.wav')
     ext_path = os.path.join(tmp_dir, 'extracted.wav')
@@ -65,10 +68,14 @@ def mp3_to_spectrogram(mp3_bytes: bytes, tmp_dir: str) -> str:
         f.write(mp3_bytes)
 
     # MP3 → WAV
+    if on_progress:
+        on_progress('converting_wav')
     sound = AudioSegment.from_mp3(mp3_path)
     sound.export(wav_path, format='wav')
 
     # Extract segment: 40-50s if long enough, else first 10s, else full clip
+    if on_progress:
+        on_progress('extracting_segment')
     wav = AudioSegment.from_wav(wav_path)
     duration_ms = len(wav)
     if duration_ms >= 50000:
@@ -81,6 +88,8 @@ def mp3_to_spectrogram(mp3_bytes: bytes, tmp_dir: str) -> str:
     segment.export(ext_path, format='wav')
 
     # Mel spectrogram (same as original app.py)
+    if on_progress:
+        on_progress('generating_spectrogram')
     y, sr = librosa.load(ext_path, duration=3)
     mels = librosa.feature.melspectrogram(y=y, sr=sr)
     fig = plt.Figure()
@@ -92,10 +101,16 @@ def mp3_to_spectrogram(mp3_bytes: bytes, tmp_dir: str) -> str:
     return spec_path
 
 
-def predict_genre(mp3_bytes: bytes) -> dict:
-    """Predict genre from raw MP3 bytes. Returns genre, confidence, probabilities."""
+def predict_genre(mp3_bytes: bytes, on_progress=None) -> dict:
+    """Predict genre from raw MP3 bytes. Returns genre, confidence, probabilities.
+    
+    on_progress: optional callback(step_name: str) called at each stage.
+    """
     with tempfile.TemporaryDirectory() as tmp_dir:
-        spec_path = mp3_to_spectrogram(mp3_bytes, tmp_dir)
+        spec_path = mp3_to_spectrogram(mp3_bytes, tmp_dir, on_progress=on_progress)
+        
+        if on_progress:
+            on_progress('analyzing')
         image_data = load_img(spec_path, color_mode='rgba', target_size=(288, 432))
         image = img_to_array(image_data).reshape((1, 288, 432, 4))
 
