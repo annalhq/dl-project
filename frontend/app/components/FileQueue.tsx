@@ -16,21 +16,21 @@ export default function FileQueue({ files, onRemove, onClearAll }: FileQueueProp
   return (
     <div className="animate-fade-up">
       {/* Stats bar */}
-      <div className="flex border border-base-content/10 shadow-sm rounded-md bg-base-100 mb-6 overflow-hidden">
-        <div className="flex-1 py-3 px-5 border-r border-base-content/5">
-          <div className="font-mono text-[9px] uppercase tracking-widest text-base-content/40">Files Selected</div>
-          <div className="text-xl font-medium tracking-tight mt-1">{files.length}</div>
+      <div className="stats stats-horizontal shadow w-full mb-6 relative">
+        <div className="stat">
+          <div className="stat-title">Files Selected</div>
+          <div className="stat-value text-primary">{files.length}</div>
         </div>
-        <div className="flex-1 py-3 px-5 border-r border-base-content/5">
-          <div className="font-mono text-[9px] uppercase tracking-widest text-base-content/40">Total Weight</div>
-          <div className="text-xl font-medium tracking-tight mt-1">
+        <div className="stat">
+          <div className="stat-title">Total Weight</div>
+          <div className="stat-value text-secondary">
             {formatFileSize(totalSize)}
           </div>
         </div>
-        <div className="py-3 px-5 flex items-center justify-center">
+        <div className="stat place-items-end justify-center">
           <button
             onClick={onClearAll}
-            className="btn btn-ghost btn-sm text-error/80 hover:text-error hover:bg-error/10 font-mono text-[10px] tracking-widest uppercase"
+            className="btn btn-outline btn-error btn-sm font-mono text-[10px] tracking-widest uppercase"
           >
             Clear Selected
           </button>

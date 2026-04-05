@@ -33,7 +33,7 @@ export default function AnalyzingProgress({
 
         {/* Overall radial progress */}
         <div
-          className="radial-progress text-base-content font-light"
+          className="radial-progress text-primary font-bold"
           style={{
             "--value": overallPct,
             "--size": "6rem",
@@ -42,7 +42,7 @@ export default function AnalyzingProgress({
           role="progressbar"
           aria-valuenow={overallPct}
         >
-          <span className="text-xl font-mono">{completedCount}/{totalFiles}</span>
+          <span className="text-xl font-mono text-base-content">{completedCount}/{totalFiles}</span>
         </div>
 
         {/* Current file steps */}
@@ -50,7 +50,7 @@ export default function AnalyzingProgress({
           <div className="w-full max-w-lg mt-2">
             <p className="text-xs font-mono mb-4 text-base-content/70 truncate px-4">
               <span className="opacity-50 mr-2">CURRENT:</span>
-              {activeEntry[0].replace(/\.mp3$/i, "")}
+              <span className="text-primary font-bold">{activeEntry[0].replace(/\.mp3$/i, "")}</span>
             </p>
             <ul className="steps steps-horizontal w-full text-[10px] font-mono tracking-widest uppercase">
               {STEP_ORDER.map((step) => {
@@ -60,7 +60,7 @@ export default function AnalyzingProgress({
                 return (
                   <li
                     key={step}
-                    className={`step ${isActive ? "step-neutral text-base-content" : "text-base-content/20"}`}
+                    className={`step ${isActive ? "step-primary" : ""}`}
                     data-content=""
                   >
                     {STEP_LABELS[step]}

@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "./components/Navbar";
 
-const jakarta = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
-  variable: "--font-jakarta",
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -22,7 +21,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="pastel" className={`${jakarta.variable} h-full`}>
+    <html lang="en" data-theme="black" className={`${inter.variable} h-full`}>
       <body className="min-h-full antialiased bg-base-200">
         <Navbar />
         <main className="min-h-[calc(100vh-4rem)]">{children}</main>
@@ -30,10 +29,10 @@ export default function RootLayout({
           <div>
             <p>
               Built with{" "}
-              <span className="font-semibold">CNN</span> ·{" "}
-              <span className="font-semibold">FastAPI</span> ·{" "}
-              <span className="font-semibold">Next.js</span> ·{" "}
-              <span className="font-semibold">DaisyUI</span>
+              <span className="font-semibold text-primary">CNN</span> ·{" "}
+              <span className="font-semibold text-secondary">FastAPI</span> ·{" "}
+              <span className="font-semibold text-accent">Next.js</span> ·{" "}
+              <span className="font-semibold text-info">DaisyUI</span>
             </p>
           </div>
         </footer>

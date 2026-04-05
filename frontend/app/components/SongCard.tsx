@@ -83,26 +83,26 @@ export default function SongCard({ result, index }: SongCardProps) {
         <div>
           <div className="flex justify-between font-mono text-[10px] uppercase tracking-widest mb-1.5 inline-flex w-full">
             <span className="text-base-content/50">Confidence</span>
-            <span className="font-semibold text-base-content">{pct(result.confidence!)}</span>
+            <span className="font-semibold text-primary">{pct(result.confidence!)}</span>
           </div>
           <progress
-            className="progress progress-neutral w-full bg-base-content/10 h-1"
+            className="progress progress-primary w-full"
             value={Math.round(result.confidence! * 100)}
             max="100"
           ></progress>
         </div>
 
         {/* Collapse for probabilities */}
-        <div className="collapse collapse-arrow bg-transparent border border-base-content/5 rounded-md mt-1">
+        <div className="collapse collapse-arrow bg-base-200 mt-2">
           <input
             type="checkbox"
             checked={expanded}
             onChange={() => setExpanded(!expanded)}
           />
-          <div className="collapse-title font-mono text-[10px] uppercase tracking-widest py-2 px-3 min-h-0 text-base-content/60">
+          <div className="collapse-title text-sm font-semibold text-base-content/80">
             Distributions
           </div>
-          <div className="collapse-content px-3">
+          <div className="collapse-content">
             <div className="space-y-2 pt-1 pb-2">
               {sortedProbs.map(([g, v]) => (
                 <div key={g} className="flex items-center gap-2 font-mono text-xs">
@@ -110,8 +110,8 @@ export default function SongCard({ result, index }: SongCardProps) {
                     {g}
                   </span>
                   <progress
-                    className={`progress w-full h-1 bg-base-content/10 ${
-                      g === result.genre ? "progress-neutral" : "opacity-30"
+                    className={`progress w-full ${
+                      g === result.genre ? "progress-primary" : ""
                     }`}
                     value={Math.round(v * 100)}
                     max="100"
