@@ -7,13 +7,7 @@ import {
   SongResult,
   FileProgress,
 } from "./lib/types";
-import {
-  API_PREDICT_STREAM,
-  API_PREDICT,
-  GENRE_EMOJI,
-  GENRES,
-  pct,
-} from "./lib/constants";
+import { API_PREDICT_STREAM, API_PREDICT, GENRES } from "./lib/constants";
 
 import HeroSection from "./components/HeroSection";
 import UploadZone from "./components/UploadZone";
@@ -214,6 +208,12 @@ export default function Home() {
   const detectedGenres = sortedGenres.map(([g]) => g);
   const topGenre = sortedGenres.length > 0 ? sortedGenres[0][0] : null;
   const errorResults = results.filter((r) => r.error);
+  const successfulResults = results.filter((r) => r.genre && !r.error);
+  const avgConfidence =
+    successfulResults.length > 0
+      ? successfulResults.reduce((acc, r) => acc + (r.confidence ?? 0), 0) /
+        successfulResults.length
+      : 0;
 
   const filteredResults = activeGenre
     ? results.filter((r) => r.genre === activeGenre)
@@ -272,6 +272,82 @@ export default function Home() {
       {/* ── Dashboard View ── */}
       {view === "dashboard" && results.length > 0 && (
         <div className="py-8 space-y-6">
+          <section className="relative overflow-hidden rounded-2xl border border-base-content/10 bg-base-100 px-5 py-6 sm:px-7 sm:py-7 animate-fade-up">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,oklch(var(--p)/0.12),transparent_45%),radial-gradient(circle_at_85%_20%,oklch(var(--s)/0.12),transparent_42%)]" />
+
+            <div className="relative flex flex-wrap items-start justify-between gap-5">
+              <div className="space-y-3">
+                <p className="font-mono text-xs uppercase tracking-[0.22em] text-base-content/55">
+                  Classification Dashboard
+                </p>
+                <div className="flex flex-wrap items-center gap-3">
+                  <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight">
+                    Analysis Report
+                  </h2>
+                  <span className="rounded-full border border-base-content/15 bg-base-100/80 px-3 py-1 font-mono text-xs uppercase tracking-widest text-base-content/70">
+                    {results.length} Entries
+                  </span>
+                </div>
+                <p className="text-sm sm:text-base text-base-content/70 max-w-2xl">
+                  {topGenre
+                    ? `Dominant class is ${topGenre} with ${detectedGenres.length} detected categories in this batch.`
+                    : "Batch completed. Review detections by card deck or detailed table log."}
+                </p>
+              </div>
+
+              <div className="flex flex-col items-stretch gap-2 min-w-[220px]">
+                <button
+                  onClick={() => exportCSV(results)}
+                  className="btn btn-primary btn-sm font-mono text-xs tracking-widest uppercase"
+                >
+                  Export CSV
+                </button>
+                <button
+                  id="classify-again-btn"
+                  onClick={reset}
+                  className="btn btn-outline btn-sm font-mono text-xs tracking-widest uppercase border-base-content/20"
+                >
+                  New Session
+                </button>
+              </div>
+            </div>
+
+            <div className="relative mt-5 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+              <div className="rounded-xl border border-base-content/10 bg-base-100/75 px-3 py-2.5">
+                <p className="font-mono text-xs uppercase tracking-widest text-base-content/55">
+                  Confidence
+                </p>
+                <p className="text-lg sm:text-xl font-semibold tabular-nums mt-1">
+                  {(avgConfidence * 100).toFixed(1)}%
+                </p>
+              </div>
+              <div className="rounded-xl border border-base-content/10 bg-base-100/75 px-3 py-2.5">
+                <p className="font-mono text-xs uppercase tracking-widest text-base-content/55">
+                  Top Genre
+                </p>
+                <p className="text-lg sm:text-xl font-semibold mt-1 uppercase truncate">
+                  {topGenre ?? "n/a"}
+                </p>
+              </div>
+              <div className="rounded-xl border border-base-content/10 bg-base-100/75 px-3 py-2.5">
+                <p className="font-mono text-xs uppercase tracking-widest text-base-content/55">
+                  Detected
+                </p>
+                <p className="text-lg sm:text-xl font-semibold tabular-nums mt-1">
+                  {detectedGenres.length}
+                </p>
+              </div>
+              <div className="rounded-xl border border-base-content/10 bg-base-100/75 px-3 py-2.5">
+                <p className="font-mono text-xs uppercase tracking-widest text-base-content/55">
+                  Errors
+                </p>
+                <p className="text-lg sm:text-xl font-semibold tabular-nums mt-1">
+                  {errorResults.length}
+                </p>
+              </div>
+            </div>
+          </section>
+
           {/* Stats */}
           <DashboardStats
             results={results}
@@ -279,50 +355,23 @@ export default function Home() {
             topGenre={topGenre}
           />
 
-          {/* Action bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 animate-fade-up">
-            <div className="flex items-center gap-3">
-              <h2 className="text-xl font-semibold tracking-tight">
-                Analysis Report
-              </h2>
-              <span className="px-2 py-0.5 rounded-full bg-base-content/10 font-mono text-xs">
-                {results.length} ENTRIES
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => exportCSV(results)}
-                className="btn btn-ghost btn-sm font-mono text-xs tracking-widest uppercase"
-              >
-                Output CSV
-              </button>
-              <button
-                id="classify-again-btn"
-                onClick={reset}
-                className="btn btn-outline btn-sm font-mono text-xs tracking-widest uppercase border-base-content/20"
-              >
-                New Session
-              </button>
-            </div>
-          </div>
-
           {/* Filter + View toggle */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mt-2">
+          <div className="flex flex-wrap items-center justify-between gap-4 mt-2 rounded-xl border border-base-content/10 bg-base-100 px-3 py-3 sm:px-4 animate-fade-up">
             <GenreFilter
               genres={detectedGenres}
               genreCounts={genreCounts}
               activeGenre={activeGenre}
               onSelect={setActiveGenre}
             />
-            <div className="flex bg-base-content/5 p-1 rounded font-mono text-xs uppercase tracking-widest">
+            <div className="inline-flex rounded-lg border border-base-content/10 bg-base-200 p-1 font-mono text-xs uppercase tracking-widest">
               <button
-                className={`px-3 py-1.5 rounded transition-colors ${dashViewMode === "grid" ? "bg-base-100 shadow-sm text-base-content" : "text-base-content/40 hover:text-base-content/80"}`}
+                className={`px-3 py-1.5 rounded-md transition-all ${dashViewMode === "grid" ? "bg-base-100 shadow-sm text-base-content" : "text-base-content/45 hover:text-base-content/85"}`}
                 onClick={() => setDashViewMode("grid")}
               >
                 Deck
               </button>
               <button
-                className={`px-3 py-1.5 rounded transition-colors ${dashViewMode === "table" ? "bg-base-100 shadow-sm text-base-content" : "text-base-content/40 hover:text-base-content/80"}`}
+                className={`px-3 py-1.5 rounded-md transition-all ${dashViewMode === "table" ? "bg-base-100 shadow-sm text-base-content" : "text-base-content/45 hover:text-base-content/85"}`}
                 onClick={() => setDashViewMode("table")}
               >
                 Log
@@ -332,7 +381,7 @@ export default function Home() {
 
           {/* Grid View */}
           {dashViewMode === "grid" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 stagger">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 stagger">
               {filteredResults.map((r, i) => (
                 <SongCard key={r.filename} result={r} index={i} />
               ))}
@@ -341,28 +390,30 @@ export default function Home() {
 
           {/* Table View */}
           {dashViewMode === "table" && (
-            <div className="card card-border bg-base-100 shadow-sm">
+            <div className="rounded-xl border border-base-content/10 bg-base-100 p-3 sm:p-4 shadow-sm animate-fade-up">
               <SongTable results={filteredResults} />
             </div>
           )}
 
           {/* Errors */}
           {errorResults.length > 0 && (
-            <div className="space-y-3 animate-fade-up mt-8 border-t border-error/20 pt-6">
+            <div className="space-y-3 animate-fade-up mt-8 rounded-xl border border-error/20 bg-error/5 p-4 sm:p-5">
               <h3 className="text-sm font-semibold text-error tracking-tight">
-                PROCESSING ERRORS ({errorResults.length})
+                Processing Errors ({errorResults.length})
               </h3>
-              {errorResults.map((r) => (
-                <div
-                  key={r.filename}
-                  className="p-3 bg-error/5 border border-error/10 rounded font-mono text-xs text-error"
-                >
-                  <span className="font-bold opacity-80 mr-2">
-                    [{r.filename}]
-                  </span>
-                  {r.error}
-                </div>
-              ))}
+              <div className="space-y-2">
+                {errorResults.map((r) => (
+                  <div
+                    key={r.filename}
+                    className="rounded-lg border border-error/20 bg-base-100/80 px-3 py-2.5 font-mono text-xs text-error"
+                  >
+                    <span className="font-bold opacity-80 mr-2">
+                      [{r.filename}]
+                    </span>
+                    {r.error}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </div>

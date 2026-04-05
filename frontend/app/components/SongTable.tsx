@@ -59,18 +59,18 @@ export default function SongTable({ results }: SongTableProps) {
   ];
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto rounded-lg border border-base-content/8">
       <table className="w-full border-collapse text-sm">
         {/* Head */}
         <thead>
-          <tr className="border-b border-base-content/8">
+          <tr className="border-b border-base-content/10 bg-base-200/50">
             {cols.map(({ label, field, className }) => (
               <th
                 key={label}
                 className={[
-                  "pb-2.5 pt-1 text-left font-mono text-xs uppercase tracking-widest text-base-content/55 font-normal",
+                  "px-3 pb-2.5 pt-3 text-left font-mono text-xs uppercase tracking-[0.2em] text-base-content/60 font-normal",
                   field
-                    ? "cursor-pointer select-none hover:text-base-content/60 transition-colors"
+                    ? "cursor-pointer select-none hover:text-base-content/90 transition-colors"
                     : "",
                   className ?? "",
                 ].join(" ")}
@@ -92,17 +92,17 @@ export default function SongTable({ results }: SongTableProps) {
             return (
               <tr
                 key={r.filename}
-                className="group border-b border-base-content/5 hover:bg-base-content/2.5 transition-colors"
+                className="group border-b border-base-content/6 bg-base-100 hover:bg-base-content/2.5 transition-colors"
               >
                 {/* Index */}
-                <td className="py-3 font-mono text-xs text-base-content/55 tabular-nums">
+                <td className="px-3 py-3 font-mono text-xs text-base-content/55 tabular-nums">
                   {(i + 1).toString().padStart(2, "0")}
                 </td>
 
                 {/* Filename */}
-                <td className="py-3 pr-4">
+                <td className="px-3 py-3 pr-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-[13px] font-medium text-base-content/85 truncate max-w-[220px] tracking-tight">
+                    <span className="text-[13px] font-medium text-base-content/85 truncate max-w-55 tracking-tight">
                       {r.filename.replace(/\.mp3$/i, "")}
                     </span>
                     {r.error && (
@@ -114,10 +114,10 @@ export default function SongTable({ results }: SongTableProps) {
                 </td>
 
                 {/* Genre badge */}
-                <td className="py-3 pr-4">
+                <td className="px-3 py-3 pr-4">
                   {r.genre ? (
                     <span
-                      className="inline-block rounded px-2 py-0.5 text-[11px] font-medium tracking-wide"
+                      className="inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium tracking-wide"
                       style={{
                         backgroundColor: genreColor?.bg,
                         color: genreColor?.text,
@@ -132,7 +132,7 @@ export default function SongTable({ results }: SongTableProps) {
                 </td>
 
                 {/* Confidence bar */}
-                <td className="py-3 pr-4">
+                <td className="px-3 py-3 pr-4">
                   {r.confidence != null ? (
                     <div className="flex items-center gap-2.5">
                       <div className="relative h-1 w-24 overflow-hidden rounded-full bg-base-content/8">
@@ -153,12 +153,12 @@ export default function SongTable({ results }: SongTableProps) {
                 </td>
 
                 {/* Top 3 distributions */}
-                <td className="py-3">
+                <td className="px-3 py-3">
                   <div className="flex items-center gap-3">
                     {topProbs.map(([g, v]) => (
                       <div
                         key={g}
-                        className="flex flex-col gap-0.5 opacity-50 group-hover:opacity-90 transition-opacity"
+                        className="rounded-md border border-base-content/10 bg-base-200/40 px-2 py-1.5 opacity-55 group-hover:opacity-95 transition-opacity"
                       >
                         <span className="font-mono text-xs uppercase tracking-widest text-base-content/75">
                           {g}

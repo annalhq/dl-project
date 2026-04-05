@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { SongResult } from "../lib/types";
-import { pct, GENRE_COLORS, GENRES } from "../lib/constants";
+import { pct, GENRE_COLORS } from "../lib/constants";
 
 interface SongCardProps {
   result: SongResult;
@@ -21,7 +21,7 @@ export default function SongCard({ result, index }: SongCardProps) {
       >
         <div className="card-body p-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded bg-error/10 text-error flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 rounded bg-error/10 text-error flex items-center justify-center shrink-0">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -61,14 +61,15 @@ export default function SongCard({ result, index }: SongCardProps) {
 
   return (
     <div
-      className="card card-border bg-base-100 shadow-sm card-hover-lift animate-fade-up"
+      className="card card-border bg-base-100 shadow-sm card-hover-lift animate-fade-up overflow-hidden"
       style={{ animationDelay: `${index * 50}ms`, opacity: 0 }}
     >
+      <div className="h-1 w-full bg-gradient-to-r from-primary/70 via-secondary/60 to-accent/70" />
       <div className="card-body p-4 gap-4">
         {/* Header */}
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-8 h-8 rounded bg-base-content/5 text-base-content/50 flex items-center justify-center flex-shrink-0">
+            <div className="w-9 h-9 rounded-lg bg-base-content/6 text-base-content/65 flex items-center justify-center shrink-0 border border-base-content/10">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -86,7 +87,7 @@ export default function SongCard({ result, index }: SongCardProps) {
             </div>
             <div className="min-w-0">
               <p
-                className="font-medium text-sm truncate card-title tracking-tight"
+                className="font-semibold text-[15px] truncate card-title tracking-tight"
                 title={name}
               >
                 {name}
@@ -97,7 +98,7 @@ export default function SongCard({ result, index }: SongCardProps) {
             </div>
           </div>
           <span
-            className="genre-badge flex-shrink-0"
+            className="genre-badge shrink-0"
             style={{
               backgroundColor: genreColor.bg,
               color: genreColor.text,
@@ -112,25 +113,26 @@ export default function SongCard({ result, index }: SongCardProps) {
         <div>
           <div className="flex justify-between font-mono text-xs uppercase tracking-widest mb-1.5 w-full">
             <span className="text-base-content/65">Confidence</span>
-            <span className="font-semibold text-base-content">
+            <span className="font-semibold text-base-content tabular-nums">
               {pct(result.confidence!)}
             </span>
           </div>
-          <progress
-            className="progress progress-neutral w-full bg-base-content/10 h-1"
-            value={Math.round(result.confidence! * 100)}
-            max="100"
-          ></progress>
+          <div className="relative h-1.5 w-full rounded-full bg-base-content/10 overflow-hidden">
+            <div
+              className="absolute inset-y-0 left-0 rounded-full bg-base-content/60"
+              style={{ width: `${Math.round(result.confidence! * 100)}%` }}
+            />
+          </div>
         </div>
 
         {/* Collapse for probabilities */}
-        <div className="collapse collapse-arrow bg-transparent border border-base-content/5 rounded-md mt-1">
+        <div className="collapse collapse-arrow bg-base-200/40 border border-base-content/8 rounded-lg mt-1">
           <input
             type="checkbox"
             checked={expanded}
             onChange={() => setExpanded(!expanded)}
           />
-          <div className="collapse-title font-mono text-xs uppercase tracking-widest py-2 px-3 min-h-0 text-base-content/70">
+          <div className="collapse-title font-mono text-xs uppercase tracking-widest py-2.5 px-3 min-h-0 text-base-content/70">
             Distributions
           </div>
           <div className="collapse-content px-3">
@@ -140,16 +142,19 @@ export default function SongCard({ result, index }: SongCardProps) {
                   key={g}
                   className="flex items-center gap-2 font-mono text-xs"
                 >
-                  <span className="w-[72px] text-right uppercase text-base-content/65 tracking-widest text-xs">
+                  <span className="w-18 text-right uppercase text-base-content/65 tracking-widest text-xs">
                     {g}
                   </span>
-                  <progress
-                    className={`progress w-full h-1 bg-base-content/10 ${
-                      g === result.genre ? "progress-neutral" : "opacity-30"
-                    }`}
-                    value={Math.round(v * 100)}
-                    max="100"
-                  ></progress>
+                  <div className="relative h-1 w-full rounded-full bg-base-content/10 overflow-hidden">
+                    <div
+                      className={`absolute inset-y-0 left-0 rounded-full ${
+                        g === result.genre
+                          ? "bg-base-content/60"
+                          : "bg-base-content/30"
+                      }`}
+                      style={{ width: `${Math.round(v * 100)}%` }}
+                    />
+                  </div>
                   <span
                     className={`w-10 text-right tracking-widest text-xs ${
                       g === result.genre

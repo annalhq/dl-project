@@ -21,15 +21,15 @@ export const GENRE_DESC: Record<string, string> = {
 
 // Monochrome badge colors
 export const GENRE_COLORS: Record<string, { bg: string; text: string; border: string }> = {
-  blues:     { bg: "transparent", text: "#e5e5e5", border: "#262626" },
-  classical: { bg: "transparent", text: "#e5e5e5", border: "#262626" },
-  country:   { bg: "transparent", text: "#e5e5e5", border: "#262626" },
-  disco:     { bg: "transparent", text: "#e5e5e5", border: "#262626" },
-  hiphop:    { bg: "transparent", text: "#e5e5e5", border: "#262626" },
-  metal:     { bg: "transparent", text: "#e5e5e5", border: "#262626" },
-  pop:       { bg: "transparent", text: "#e5e5e5", border: "#262626" },
-  reggae:    { bg: "transparent", text: "#e5e5e5", border: "#262626" },
-  rock:      { bg: "transparent", text: "#e5e5e5", border: "#262626" },
+  blues: { bg: "#e0f2fe", text: "#0c4a6e", border: "#7dd3fc" },
+  classical: { bg: "#ede9fe", text: "#4c1d95", border: "#c4b5fd" },
+  country: { bg: "#fef3c7", text: "#92400e", border: "#fcd34d" },
+  disco: { bg: "#fce7f3", text: "#9d174d", border: "#f9a8d4" },
+  hiphop: { bg: "#fee2e2", text: "#991b1b", border: "#fca5a5" },
+  metal: { bg: "#e5e7eb", text: "#1f2937", border: "#9ca3af" },
+  pop: { bg: "#dbeafe", text: "#1e3a8a", border: "#93c5fd" },
+  reggae: { bg: "#dcfce7", text: "#166534", border: "#86efac" },
+  rock: { bg: "#ffedd5", text: "#9a3412", border: "#fdba74" },
 };
 
 // ── Processing step labels ─────────────────────────────────────────────────

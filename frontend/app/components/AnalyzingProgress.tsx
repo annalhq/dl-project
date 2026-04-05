@@ -1,7 +1,7 @@
 "use client";
 
 import { FileProgress, SongResult } from "../lib/types";
-import { STEP_LABELS, STEP_ORDER, GENRE_COLORS } from "../lib/constants";
+import { STEP_LABELS, STEP_ORDER } from "../lib/constants";
 
 interface AnalyzingProgressProps {
   fileProgresses: Map<string, FileProgress>;
