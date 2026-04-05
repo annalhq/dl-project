@@ -1,8 +1,19 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { AppView, DashboardViewMode, SongResult, FileProgress } from "./lib/types";
-import { API_PREDICT_STREAM, API_PREDICT, GENRE_EMOJI, GENRES, pct } from "./lib/constants";
+import {
+  AppView,
+  DashboardViewMode,
+  SongResult,
+  FileProgress,
+} from "./lib/types";
+import {
+  API_PREDICT_STREAM,
+  API_PREDICT,
+  GENRE_EMOJI,
+  GENRES,
+  pct,
+} from "./lib/constants";
 
 import HeroSection from "./components/HeroSection";
 import UploadZone from "./components/UploadZone";
@@ -21,7 +32,7 @@ function exportCSV(results: SongResult[]) {
     r.genre ?? "error",
     r.confidence != null ? (r.confidence * 100).toFixed(1) : "",
     ...GENRES.map((g) =>
-      r.probabilities?.[g] != null ? (r.probabilities[g] * 100).toFixed(2) : ""
+      r.probabilities?.[g] != null ? (r.probabilities[g] * 100).toFixed(2) : "",
     ),
   ]);
 
@@ -40,14 +51,16 @@ export default function Home() {
   const [files, setFiles] = useState<File[]>([]);
   const [view, setView] = useState<AppView>("upload");
   const [results, setResults] = useState<SongResult[]>([]);
-  const [fileProgresses, setFileProgresses] = useState<Map<string, FileProgress>>(new Map());
+  const [fileProgresses, setFileProgresses] = useState<
+    Map<string, FileProgress>
+  >(new Map());
   const [dashViewMode, setDashViewMode] = useState<DashboardViewMode>("grid");
   const [activeGenre, setActiveGenre] = useState<string | null>(null);
 
   // ── File Management ────────────────────────────────────────────────────
   const addFiles = useCallback((incoming: FileList | File[]) => {
     const mp3s = Array.from(incoming).filter((f) =>
-      f.name.toLowerCase().endsWith(".mp3")
+      f.name.toLowerCase().endsWith(".mp3"),
     );
     setFiles((prev) => {
       const names = new Set(prev.map((f) => f.name));
@@ -168,7 +181,7 @@ export default function Home() {
             confidence: null,
             probabilities: null,
             error: err instanceof Error ? err.message : "Unknown error",
-          }))
+          })),
         );
       }
       setView("dashboard");
@@ -191,10 +204,13 @@ export default function Home() {
     return acc;
   }, {});
 
-  const sortedGenres = Object.entries(grouped)
-    .sort((a, b) => b[1].length - a[1].length);
+  const sortedGenres = Object.entries(grouped).sort(
+    (a, b) => b[1].length - a[1].length,
+  );
 
-  const genreCounts = Object.fromEntries(sortedGenres.map(([g, songs]) => [g, songs.length]));
+  const genreCounts = Object.fromEntries(
+    sortedGenres.map(([g, songs]) => [g, songs.length]),
+  );
   const detectedGenres = sortedGenres.map(([g]) => g);
   const topGenre = sortedGenres.length > 0 ? sortedGenres[0][0] : null;
   const errorResults = results.filter((r) => r.error);
@@ -216,7 +232,7 @@ export default function Home() {
 
             {files.length > 0 && (
               <>
-                <div className="divider text-[10px] uppercase tracking-widest font-mono text-base-content/40 mt-8 mb-6">
+                <div className="divider text-xs uppercase tracking-widest font-mono text-base-content/55 mt-8 mb-6">
                   Ready Sequence
                 </div>
                 <FileQueue
@@ -266,20 +282,24 @@ export default function Home() {
           {/* Action bar */}
           <div className="flex flex-wrap items-center justify-between gap-3 animate-fade-up">
             <div className="flex items-center gap-3">
-              <h2 className="text-xl font-semibold tracking-tight">Analysis Report</h2>
-              <span className="px-2 py-0.5 rounded-full bg-base-content/10 font-mono text-[10px]">{results.length} ENTRIES</span>
+              <h2 className="text-xl font-semibold tracking-tight">
+                Analysis Report
+              </h2>
+              <span className="px-2 py-0.5 rounded-full bg-base-content/10 font-mono text-xs">
+                {results.length} ENTRIES
+              </span>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => exportCSV(results)}
-                className="btn btn-ghost btn-sm font-mono text-[10px] tracking-widest uppercase"
+                className="btn btn-ghost btn-sm font-mono text-xs tracking-widest uppercase"
               >
                 Output CSV
               </button>
               <button
                 id="classify-again-btn"
                 onClick={reset}
-                className="btn btn-outline btn-sm font-mono text-[10px] tracking-widest uppercase border-base-content/20"
+                className="btn btn-outline btn-sm font-mono text-xs tracking-widest uppercase border-base-content/20"
               >
                 New Session
               </button>
@@ -294,7 +314,7 @@ export default function Home() {
               activeGenre={activeGenre}
               onSelect={setActiveGenre}
             />
-            <div className="flex bg-base-content/5 p-1 rounded font-mono text-[10px] uppercase tracking-widest">
+            <div className="flex bg-base-content/5 p-1 rounded font-mono text-xs uppercase tracking-widest">
               <button
                 className={`px-3 py-1.5 rounded transition-colors ${dashViewMode === "grid" ? "bg-base-100 shadow-sm text-base-content" : "text-base-content/40 hover:text-base-content/80"}`}
                 onClick={() => setDashViewMode("grid")}
@@ -333,8 +353,13 @@ export default function Home() {
                 PROCESSING ERRORS ({errorResults.length})
               </h3>
               {errorResults.map((r) => (
-                <div key={r.filename} className="p-3 bg-error/5 border border-error/10 rounded font-mono text-[10px] text-error">
-                  <span className="font-bold opacity-80 mr-2">[{r.filename}]</span> 
+                <div
+                  key={r.filename}
+                  className="p-3 bg-error/5 border border-error/10 rounded font-mono text-xs text-error"
+                >
+                  <span className="font-bold opacity-80 mr-2">
+                    [{r.filename}]
+                  </span>
                   {r.error}
                 </div>
               ))}

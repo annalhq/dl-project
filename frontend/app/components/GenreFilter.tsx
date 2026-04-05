@@ -16,9 +16,9 @@ export default function GenreFilter({
   return (
     <div className="flex flex-wrap gap-2 animate-fade-up">
       <button
-        className={`px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest rounded border transition-colors ${
-          activeGenre === null 
-            ? "border-base-content bg-base-content text-base-100" 
+        className={`px-3 py-1.5 font-mono text-xs uppercase tracking-widest rounded border transition-colors ${
+          activeGenre === null
+            ? "border-base-content bg-base-content text-base-100"
             : "border-base-content/10 bg-transparent text-base-content/60 hover:border-base-content/30"
         }`}
         onClick={() => onSelect(null)}
@@ -31,7 +31,7 @@ export default function GenreFilter({
       {genres.map((g) => (
         <button
           key={g}
-          className={`px-3 py-1.5 font-mono text-[10px] uppercase tracking-widest rounded border transition-colors ${
+          className={`px-3 py-1.5 font-mono text-xs uppercase tracking-widest rounded border transition-colors ${
             activeGenre === g
               ? "border-base-content bg-base-content text-base-100"
               : "border-base-content/10 bg-transparent text-base-content/60 hover:border-base-content/30"

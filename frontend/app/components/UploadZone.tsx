@@ -22,11 +22,9 @@ export default function UploadZone({ onFilesAdded }: UploadZoneProps) {
         setTimeout(() => setRejected([]), 4000);
       }
 
-      if (mp3s.length > 0) {
-        onFilesAdded(mp3s);
-      }
+      if (mp3s.length > 0) onFilesAdded(mp3s);
     },
-    [onFilesAdded]
+    [onFilesAdded],
   );
 
   const onDrop = useCallback(
@@ -35,7 +33,7 @@ export default function UploadZone({ onFilesAdded }: UploadZoneProps) {
       setDragOver(false);
       handleFiles(e.dataTransfer.files);
     },
-    [handleFiles]
+    [handleFiles],
   );
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,46 +41,73 @@ export default function UploadZone({ onFilesAdded }: UploadZoneProps) {
     e.target.value = "";
   };
 
+  const open = () => inputRef.current?.click();
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Dropzone */}
       <div
-        id="dropzone"
         role="button"
         tabIndex={0}
         aria-label="Upload MP3 files"
-        className={`dropzone flex flex-col items-center justify-center py-16 gap-3 ${
-          dragOver ? "drag-over" : ""
-        }`}
-        onClick={() => inputRef.current?.click()}
-        onKeyDown={(e) => e.key === "Enter" && inputRef.current?.click()}
+        onClick={open}
+        onKeyDown={(e) => e.key === "Enter" && open()}
         onDragOver={(e) => {
           e.preventDefault();
           setDragOver(true);
         }}
         onDragLeave={() => setDragOver(false)}
         onDrop={onDrop}
+        className={[
+          "group flex flex-col items-center justify-center gap-4 rounded-xl border border-dashed px-6 py-14 cursor-pointer",
+          "transition-colors duration-150 select-none outline-none",
+          "focus-visible:ring-2 focus-visible:ring-base-content/20",
+          dragOver
+            ? "border-base-content/30 bg-base-content/5"
+            : "border-base-content/15 hover:border-base-content/25 hover:bg-base-content/2",
+        ].join(" ")}
       >
-        <div className={`transition-transform duration-200 text-base-content/50 ${dragOver ? "scale-110" : ""}`}>
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+        {/* Icon */}
+        <div
+          className={`transition-transform duration-200 text-base-content/30 ${dragOver ? "scale-110 text-base-content/50" : "group-hover:text-base-content/40"}`}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.2}
+            stroke="currentColor"
+            className="w-10 h-10"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
+            />
           </svg>
         </div>
-        <div className="text-center">
-          <p className="text-base-content font-medium text-lg tracking-tight">
-            Select files to analyze
+
+        {/* Copy */}
+        <div className="text-center space-y-1">
+          <p className="text-sm font-medium text-base-content/80 tracking-tight">
+            {dragOver ? "Drop to upload" : "Drop MP3s here"}
           </p>
-          <p className="text-base-content/50 text-sm mt-1 font-light">
-            or drag and drop them here
+          <p className="text-xs text-base-content/35">
+            or{" "}
+            <span className="underline underline-offset-2 decoration-base-content/25 hover:text-base-content/60 transition-colors">
+              browse files
+            </span>
           </p>
         </div>
-        <div className="flex gap-2 mt-2">
-          <span className="px-2 py-0.5 text-[10px] font-mono tracking-widest text-base-content/40 border border-base-content/10 rounded uppercase">MP3</span>
-        </div>
+
+        {/* Format badge */}
+        <span className="px-2 py-0.5 text-xs font-mono tracking-widest text-base-content/55 border border-base-content/10 rounded uppercase">
+          .mp3
+        </span>
+
         <input
           ref={inputRef}
           type="file"
-          id="file-input"
           className="hidden"
           accept=".mp3,audio/mpeg"
           multiple
@@ -90,38 +115,24 @@ export default function UploadZone({ onFilesAdded }: UploadZoneProps) {
         />
       </div>
 
-      {/* Alternative file input */}
-      <div className="flex items-center justify-center">
-        <label className="form-control w-full max-w-sm">
-          <input
-            type="file"
-            className="file-input file-input-bordered file-input-sm w-full font-mono text-xs"
-            accept=".mp3,audio/mpeg"
-            multiple
-            onChange={onFileChange}
-          />
-        </label>
-      </div>
-
-      {/* Rejected files alert */}
+      {/* Rejected files notice */}
       {rejected.length > 0 && (
-        <div className="alert alert-warning alert-sm animate-fade-up rounded border-l-4 border-warning bg-warning/10 text-warning-content">
+        <div className="flex items-center gap-2.5 rounded-lg border border-warning/20 bg-warning/8 px-3.5 py-2.5 text-xs text-warning-content/80">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 shrink-0"
-            fill="none"
             viewBox="0 0 24 24"
-            stroke="currentColor"
+            fill="currentColor"
+            className="h-3.5 w-3.5 shrink-0 text-warning/70"
           >
             <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+              fillRule="evenodd"
+              d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z"
+              clipRule="evenodd"
             />
           </svg>
-          <span className="font-medium text-xs">
-            <strong>{rejected.length}</strong> invalid format{rejected.length !== 1 ? "s" : ""} — MP3 exclusively.
+          <span>
+            <strong className="font-semibold">{rejected.length}</strong> file
+            {rejected.length !== 1 ? "s" : ""} rejected — MP3 only
           </span>
         </div>
       )}
