@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg
 from pydub import AudioSegment
 
-# Use tensorflow.keras — works with TF 2.x (no standalone keras needed)
 from tensorflow.keras.layers import (
     Input, Dense, Activation, BatchNormalization,
     Flatten, Conv2D, MaxPooling2D
@@ -19,7 +18,6 @@ from tensorflow.keras.utils import load_img, img_to_array
 
 CLASS_LABELS = ['blues', 'classical', 'country', 'disco', 'hiphop', 'metal', 'pop', 'reggae', 'rock']
 
-# Model weights are in the sample/ folder (original Streamlit implementation)
 MODEL_WEIGHTS_PATH = os.path.join(os.path.dirname(__file__), '..', 'training', 'Model.h5')
 
 _model = None
