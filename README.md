@@ -11,35 +11,29 @@
 
 
 
-- [SoundSort: Deep Learning Music Genre Classification Platform](#soundsort-deep-learning-music-genre-classification-platform)
-  - [Overview](#overview)
-  - [Problem Statement](#problem-statement)
-  - [Objectives](#objectives)
-  - [Supported Genre Classes](#supported-genre-classes)
-  - [System Architecture](#system-architecture)
-  - [Core Features](#core-features)
-  - [Technology Stack](#technology-stack)
-  - [Local Setup](#local-setup)
-    - [Prerequisites](#prerequisites)
-    - [1. Backend](#1-backend)
-    - [2. Frontend](#2-frontend)
-  - [API Documentation](#api-documentation)
-    - [`GET /health`](#get-health)
-    - [`POST /predict`](#post-predict)
-    - [`POST /predict-stream`](#post-predict-stream)
-  - [Inference Pipeline Details](#inference-pipeline-details)
-  - [Dataset Preparation and Training Utilities](#dataset-preparation-and-training-utilities)
-  - [Evaluation Artifacts](#evaluation-artifacts)
-    - [Model Accuracy](#model-accuracy)
-    - [Model Loss](#model-loss)
-  - [Operational Notes](#operational-notes)
-  - [Troubleshooting](#troubleshooting)
-    - [Backend fails on MP3 decode](#backend-fails-on-mp3-decode)
-    - [First request is slow](#first-request-is-slow)
-    - [Frontend shows backend offline](#frontend-shows-backend-offline)
-    - [Model file not found](#model-file-not-found)
-  - [Future Enhancements](#future-enhancements)
-  - [Acknowledgment](#acknowledgment)
+
+- [Overview](#overview)
+- [Problem Statement](#problem-statement)
+- [Objectives](#objectives)
+- [Supported Genre Classes](#supported-genre-classes)
+- [System Architecture](#system-architecture)
+- [Core Features](#core-features)
+- [Technology Stack](#technology-stack)
+- [Local Setup](#local-setup)
+  - [Prerequisites](#prerequisites)
+  - [1. Backend](#1-backend)
+  - [2. Frontend](#2-frontend)
+- [API Documentation](#api-documentation)
+  - [`GET /health`](#get-health)
+  - [`POST /predict`](#post-predict)
+  - [`POST /predict-stream`](#post-predict-stream)
+- [Inference Pipeline Details](#inference-pipeline-details)
+- [Dataset Preparation and Training Utilities](#dataset-preparation-and-training-utilities)
+- [Evaluation Artifacts](#evaluation-artifacts)
+  - [Model Accuracy](#model-accuracy)
+  - [Model Loss](#model-loss)
+- [Operational Notes](#operational-notes)
+
 
 ## Overview
 
@@ -267,32 +261,3 @@ Formal project report:
 - The backend loads model weights from `training/Model.h5` at startup.
 - The frontend expects backend API at `http://localhost:8000`.
 - CORS is configured for local frontend origins (`localhost:3000` and `127.0.0.1:3000`).
-
-## Troubleshooting
-
-### Backend fails on MP3 decode
-
-Ensure FFmpeg is installed and accessible from PATH.
-
-### First request is slow
-
-Model warm-up happens during backend startup; verify backend logs show successful weight loading.
-
-### Frontend shows backend offline
-
-Confirm FastAPI service is running on port `8000` and accessible from the browser host machine.
-
-### Model file not found
-
-Confirm `training/Model.h5` exists and is readable.
-
-## Future Enhancements
-
-- Replace hardcoded API base URL with environment-specific configuration.
-- Add authentication and job persistence for long-running batch sessions.
-- Introduce model versioning and experiment tracking.
-- Add CI checks and automated tests for frontend and backend layers.
-
-## Acknowledgment
-
-This project is built on common open-source tooling in the Python and JavaScript ML ecosystem, including FastAPI, TensorFlow, librosa, Next.js, and Tailwind CSS.
